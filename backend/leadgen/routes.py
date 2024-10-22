@@ -4,7 +4,7 @@ import logging
 from backend.config import db
 from sqlalchemy import desc
 from sqlalchemy.exc import SQLAlchemyError
-from flask_login import login_user, logout_user, login_required
+from flask_login import login_user, logout_user, login_required, current_user
 from flask import Blueprint, render_template, redirect, url_for, flash, request, send_from_directory, jsonify
 from werkzeug.utils import secure_filename
 from datetime import datetime
@@ -69,6 +69,7 @@ def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in allowed_extensions
 
 @leadgen_blueprint.route('/upload_csv', methods=['GET', 'POST'])
+@login_required
 def upload():
     logging.info("Entrou na rota de upload CSV")
     if request.method == 'POST':
@@ -146,7 +147,8 @@ def upload():
                                     #tags=row['Tags']
                                     store=row.get('Unidade', 'CENTRAL'),
                                     region=row.get('Região', 'São Paulo'),
-                                    tags=row.get('Tags', 'SEM TAGS')
+                                    tags=row.get('Tags', 'SEM TAGS'),
+                                    user_id=current_user.id
                                 )
                     db.session.add(lead)
                     db.session.commit()

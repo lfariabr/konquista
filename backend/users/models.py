@@ -40,10 +40,18 @@ class UserPhone(db.Model):
     phone_token = db.Column(db.String(256))
     phone_description = db.Column(db.String(256))  # Novo campo adicionado
 
-    # # Adding user relationship
-    # user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
-    # user = db.relationship("User", backref=db.backref("userphones", lazy=True))
+    # Foreign key linking to User model
+    # This establishes that each UserPhone entry is linked to a specific user
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
 
+    # Relationship back to the User model
+    user = db.relationship("User", backref=db.backref("userphones", lazy=True))
+    # Allows Flask-SQLAlchemy to automatically provide access to all phones associated with an User
+    # So we when querying a user, we can access user.userphones
+
+    # Relationship back to the User model (without backref for multiple phones)
+    # user = db.relationship('User', uselist=False)  # uselist=False to enforce 1-to-1
+    
     def __init__(self, user_id, phone_number, phone_token, phone_description=None):
         self.user_id = user_id
         self.phone_number = phone_number
@@ -63,10 +71,12 @@ class MessageList(db.Model):
     interval = db.Column(db.Integer) # days or hours between messages
     file = db.Column(db.String(256)) # photo, video,ls migrations/versions/ audio, etc
 
-    # # Adding user relationship
-    # user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
-    # user = db.relationship("User", backref=db.backref("messagelist", lazy=True))
+    # Foreign key linking to User model
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
 
+    # Relationship back to the User model
+    user = db.relationship("User", backref=db.backref("messagelist", lazy=True))
+    
     # Método para converter a instância em um dicionário
     def to_dict(self):
         return {

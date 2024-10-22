@@ -16,13 +16,14 @@ class LeadLandingPage(db.Model):
     region = db.Column(db.Text)
     tags = db.Column(db.Text)
 
-    # # Adding user relationship
-    # user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
-    # user = db.relationship("User", backref=db.backref("leadlandingpage", lazy=True))
+    # Adding user relationship to Lead Landing Page
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    user = db.relationship("User", backref=db.backref("leadlandingpage", lazy=True))
 
-    def __init__(self, phone, name, created_date=None, tag='', source='unknown', store='CENTRAL', region='São Paulo', tags='SEM TAGS'):
+    def __init__(self, user_id, phone, name, created_date=None, tag='', source='unknown', store='CENTRAL', region='São Paulo', tags='SEM TAGS'):
         self.phone = phone
         self.name = name
+        self.user_id = user_id
         self.created_date = created_date or datetime.utcnow()  # Usar data atual se não for fornecida
         self.tag = tag
         self.source = source
@@ -60,12 +61,13 @@ class LeadWhatsapp(db.Model):
     region = db.Column(db.String(64), nullable=True, default='São Paulo')  # Região com valor padrão vazio
     tags = db.Column(db.String(64), nullable=True, default='SEM TAGS')  # Tag opcional com valor padrão vazio
 
-    # # Adding user relationship
-    # user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
-    # user = db.relationship("User", backref=db.backref("leadwhatsapp", lazy=True))
+    # Adding user relationship to LeadWhatsapp
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    user = db.relationship("User", backref=db.backref("leadwhatsapp", lazy=True))
     
-    def __init__(self, phone, name, created_date=None, tag='', source='unknown', store='CENTRAL', region='São Paulo', tags='SEM TAGS'):
+    def __init__(self, user_id, phone, name, created_date=None, tag='', source='unknown', store='CENTRAL', region='São Paulo', tags='SEM TAGS'):
         self.phone = phone
+        self.user_id = user_id
         self.name = name
         self.created_date = created_date or datetime.utcnow()  # Usar data atual se não for fornecida
         self.tag = tag

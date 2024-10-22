@@ -46,7 +46,8 @@ def new_message():
             title=form.title.data, 
             text=form.text.data, 
             interval=form.interval.data, 
-            file=filename
+            file=filename,
+            user_id=current_user.id
         )
 
         db.session.add(message)
@@ -60,7 +61,9 @@ def new_message():
 @core_blueprint.route('/message_list', methods=['GET'])
 @login_required
 def message_list():
-    messages = MessageList.query.all()
+    # messages = MessageList.query.all()
+    # Showing message to current user only
+    messages = MessageList.query.filter_by(user_id=current_user.id).all()
     return render_template('core/message_list.html', messages=messages)
 
 # Route for Editing a Message
@@ -125,8 +128,12 @@ def message_logs():
         'status' : request.args.get('status', type=str),
     }
 
-    # Building the query based on filters
-    query = MessageLog.query
+    ## Building the query based on filters - old
+    # query = MessageLog.query
+
+    # Building query based on filters + user_id
+    query = MessageLog.query.filter_by(user_id=current_user.id)
+
     for attr, value in filters.items():
         if value:
             column = getattr(MessageLog, attr, None)
@@ -177,7 +184,9 @@ def new_phone():
 @core_blueprint.route('/phone_list', methods=['GET'])
 @login_required
 def phone_list():
-    phones = UserPhone.query.all()
+    # phones = UserPhone.query.all()
+    # Fetch phones only for the logged-in user
+    phones = UserPhone.query.filter_by(user_id=current_user.id).all()
     return render_template('core/phone_list.html', phones=phones)
 
 # Editing Phone Number
@@ -379,6 +388,10 @@ def view_leads_whatsapp():
     # Building the queries based on filters
     whatsapp = LeadWhatsapp.query
     landingpage = LeadLandingPage.query
+
+    # Building the queries based on filters + current user id
+    whatsapp = whatsapp.filter(LeadWhatsapp.user_id == current_user.id)
+    landingpage = landingpage.filter(LeadLandingPage.user_id == current_user.id)
 
     # Apply filters
     for attr, value in filters.items():

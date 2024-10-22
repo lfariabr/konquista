@@ -1,8 +1,9 @@
-WhatsLab - WhatsApp CRM: Lead Relationship Management System
+konquista.com.br
+Konquista: Lead Relationship Management System
 
 Overview
 
-WhatsLab is a full-featured CRM (Customer Relationship Management) project designed to streamline lead management and communication via WhatsApp. 
+Full-featured CRM (Customer Relationship Management) project designed to streamline lead management and communication via WhatsApp. 
 
 The system focuses on automating personalized message delivery, managing leads, and integrating advanced APIs to ensure efficient lead nurturing and engagement. It provides a complete suite of tools, including CSV upload, real-time analytics, and an intuitive user interface for administrators.
 
@@ -89,7 +90,7 @@ Integrations
 
 Deployment
 
-	•	Heroku / Vercel: Continuous integration and deployment using GitHub, ensuring fast and smooth production deployment.
+	•	Vercel: Continuous integration and deployment using GitHub, ensuring fast and smooth production deployment.
 	•	Git and GitHub: Version control for efficient development and collaboration.
 
 How It Works
