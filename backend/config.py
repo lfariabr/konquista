@@ -16,23 +16,20 @@ app = Flask(__name__,
             static_folder='../frontend/static')     
 CORS(app)
 
-app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
 
-# Vercel
 app.instance_path = '/tmp/instance'
-
-# Sending Message with File
 app.config['UPLOAD_FOLDER'] = os.path.join(os.path.dirname(__file__), 'users', 'messages', 'uploads')
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024
+app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
 
 ######################
-## DATABASE dev | lines 31 & 32
+## DATABASE dev | lines 27 & 28
 # app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///mydatabase.db' # for local dev
 # db = SQLAlchemy(app)
 
 # #####################
-# DATABASE prod | lines 36 - 57
-app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL') + "&connect_timeout=300"
+# DATABASE prod | lines 36 - 52
+app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL') + "&connect_timeout=300" # colocar no .env
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 # SQLAlchemy optimizations for connection handling
@@ -58,7 +55,6 @@ db = SQLAlchemy(app, session_options={"autocommit": False, "autoflush": False})
 ## MIGRATE / LOGIN / LOGS
 ######################
 migrate = Migrate(app, db)
-
 login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = 'users.login'
@@ -72,14 +68,14 @@ def load_user(user_id):
 log_file_path = "/tmp/app.log"
 error_file_path = "/tmp/errors.log"
 
-
-# Logs
+# maxBytes=10240 Pensar em como encaixar esta parte
+# os.get("backup_countrotatingfilehandler")
 logging.basicConfig(level=logging.DEBUG,
                     handlers=[
-                                # logging.FileHandler("app.log"),
-                            #   logging.FileHandler("errors.log"),
-                              RotatingFileHandler(log_file_path, maxBytes=10240, backupCount=3),
-                                RotatingFileHandler(error_file_path, maxBytes=10240, backupCount=3),
+                                logging.FileHandler("app.log"),
+                              logging.FileHandler("errors.log"),
+                            #   RotatingFileHandler(log_file_path, maxBytes=10240, backupCount=3),
+                                # RotatingFileHandler(error_file_path, maxBytes=10240, backupCount=3),
                               logging.StreamHandler()  # Uncomment to log to console
                     ], 
                     format='%(asctime)s - %(levelname)s - %(message)s',
@@ -90,18 +86,12 @@ logging.getLogger('sqlalchemy.pool').setLevel(logging.INFO)
 logging.getLogger('sqlalchemy.dialects').setLevel(logging.INFO)
 logging.getLogger('werkzeug').setLevel(logging.DEBUG)
 
-# Custom filter to replace newlines with <br> tags
+# <br> tags adjustment
 def nl2br(value):
     if value is None:
-        value = ''  # If value is None, set it to an empty string
-
-    # Replace consecutive newlines (\n\n) with <br><br> (paragraph break)
-    value = value.replace("\n\n", "<br><br>")
-
-    # Replace single newlines (\n) with a space, avoiding extra <br> tags
-    value = value.replace("\n", " ")
+        value = ''
+    value = value.replace("\n\n", "<br><br>") # Replace consecutive newlines (\n\n) with <br><br> (paragraph break)
+    value = value.replace("\n", " ") # Replace single newlines (\n) with a space, avoiding extra <br> tags
 
     return Markup(value)
-
-# Registering custom filter with the Flask app
 app.jinja_env.filters['nl2br'] = nl2br

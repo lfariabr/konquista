@@ -5,7 +5,7 @@ from flask_login import login_required, current_user
 from sqlalchemy import desc, text
 from flask_socketio import SocketIO, emit
 from datetime import datetime
-
+from sqlalchemy import literal
 from backend.config import db, app
 from backend.users.models import MessageList, UserPhone
 from backend.users.forms import MessageForm, UserPhoneForm
@@ -128,9 +128,6 @@ def message_logs():
         'status' : request.args.get('status', type=str),
     }
 
-    ## Building the query based on filters - old
-    # query = MessageLog.query
-
     # Building query based on filters + user_id
     query = MessageLog.query.filter_by(user_id=current_user.id)
 
@@ -139,7 +136,6 @@ def message_logs():
             column = getattr(MessageLog, attr, None)
             if column:
                 query = query.filter(column == value)
-    # Pagination
 
     try:
         pagination = query.order_by(
@@ -161,8 +157,6 @@ def message_logs():
 ####################
 # PHONES
 ####################
-
-# Route for Adding new Phone
 @core_blueprint.route('/new_phone', methods=['GET', 'POST'])
 @login_required
 def new_phone():
@@ -180,16 +174,13 @@ def new_phone():
     
     return render_template('core/new_phone.html', form=form)
 
-# Route for Listing Phones
 @core_blueprint.route('/phone_list', methods=['GET'])
 @login_required
 def phone_list():
-    # phones = UserPhone.query.all()
     # Fetch phones only for the logged-in user
     phones = UserPhone.query.filter_by(user_id=current_user.id).all()
     return render_template('core/phone_list.html', phones=phones)
 
-# Editing Phone Number
 @core_blueprint.route('/edit_phone/<int:id>', methods=['GET', 'POST'])
 @login_required
 def edit_phone(id):
@@ -206,7 +197,6 @@ def edit_phone(id):
 
     return render_template('core/edit_phone.html', form=form, phone=phone)
 
-# Deleting Phone Number
 @core_blueprint.route('/delete_phone/<int:id>', methods=['POST'])
 @login_required
 def delete_phone(id):
@@ -219,9 +209,9 @@ def delete_phone(id):
 ####################
 # DATA WRESTLER
 ####################
-
 # Route to render the page with the button
 @core_blueprint.route('/datawrestler', methods=['GET'])
+@login_required
 def run_datawrestler_page():
     return render_template('core/messages_handler.html')
 
@@ -230,32 +220,45 @@ socketio = SocketIO(app)
 stop_flag = threading.Event()  # Stop flag for killing the thread
 
 # Background task to run data wrestling
-def run_data_wrestling_background(app):
+def run_data_wrestling_background(app, user_id):
     with app.app_context():
         try:
-            for log in run_data_wrestling():
+            for log in run_data_wrestling(user_id):
+                # test here
+                socketio.emit('log_message', log)
+
                 if stop_flag.is_set():
                     print("")  
                     print("Data wrestling STOPPED.")
                     break 
 
-                # Emit logs to the frontend in real-time
-                socketio.emit('log_message', log)
+                
                 print(log)
         except Exception as e:
             print(f"Error while running data wrestler: {e}")
 
 # Route to start the data wrestling process
 @core_blueprint.route('/run_datawrestler', methods=['POST'])
+@login_required
 def run_datawrestler_route():
+    print("...")
+    print("START request received")
+    log = {
+        "message": "Datawrestler started",
+        "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    }
+
+    socketio.emit('log_message', log)
+
     stop_flag.clear()  
     app = current_app._get_current_object()
-    thread = threading.Thread(target=run_data_wrestling_background, args=(app,), daemon=True)
+    thread = threading.Thread(target=run_data_wrestling_background, args=(app,current_user.id), daemon=True)
     thread.start()
     return jsonify({"message": "Data wrestling process started successfully"}), 200
 
 # Route to stop the data wrestling process
 @core_blueprint.route('/stop_datawrestler', methods=['POST'])
+@login_required
 def stop_datawrestler_route():
     print("...")
     print("STOP request received")
@@ -266,107 +269,6 @@ def stop_datawrestler_route():
 # LEADS
 ####################
 
-# Route for viewing leads with pagination
-# @core_blueprint.route('/leads_whatsapp', methods=['GET'])
-# @login_required
-# def view_leads_whatsapp():
-#     # Pagination parameters
-#     page = request.args.get('page', 1, type=int)
-#     per_page = 10
-#     # Collect filters from request arguments
-#     filters = {
-#         'name': request.args.get('name', type=str),
-#         'phone': request.args.get('phone', type=str),
-#         'creation_date': request.args.get('creation_date', type=str),
-#         'tag': request.args.get('tag', type=str),
-#         'source': request.args.get('source', type=str),
-#         'unit': request.args.get('unit', type=str),
-#         'region': request.args.get('region', type=str),
-#         'tags': request.args.get('tags', type=str),
-#     }
-    
-#     # Building the query based on filters
-#     whatsapp = LeadWhatsapp.query
-#     landingpage = LeadLandingPage.query
-
-#     # Apply filters
-#     for attr, value in filters.items():
-#         if value:
-#             column = getattr(LeadWhatsapp, attr, None)
-#             if column:
-#                 whatsapp = whatsapp.filter(column == value)
-#             column = getattr(LeadLandingPage, attr, None)
-#             if column:
-#                 landingpage = landingpage.filter(column == value)
-
-#     query = whatsapp.union(landingpage)
-                
-#     # Pagination                
-#     try:
-#         pagination = query.order_by(desc(LeadWhatsapp.id)).paginate(
-#             page=page, per_page=per_page, error_out=False
-#         )
-                        
-#         leads = pagination.items
-
-#     except TypeError as e:
-#         return "Ops... could not load leads!", 500
-
-#     return render_template(
-#                         'core/view_leads.html', 
-#                         leads=leads, 
-#                         pagination=pagination
-#                         )
-# ### Editing Leads
-# @core_blueprint.route('/edit_leads/<int:lead_id>', methods=['GET', 'POST'])
-# @login_required
-# def edit_leads(lead_id):
-#     lead = LeadWhatsapp.query.get_or_404(lead_id)
-#     form = LeadWhatsappForm(obj=lead)
-    
-#     if form.validate_on_submit():
-#         # Atualize os campos diretamente
-#         lead.name = form.name.data
-#         lead.phone = form.phone.data
-#         lead.tag = form.tag.data
-#         lead.source = form.source.data
-#         lead.store = form.store.data
-#         lead.region = form.region.data
-#         lead.tags = form.tags.data
-
-#         # Capturar a data do campo de data e definir hora como NOW
-#         if form.created_date.data:
-#             try:
-#                 # Apenas a data fornecida, adicionando a hora atual
-#                 selected_date = datetime.strptime(form.created_date.data, '%Y-%m-%d')
-#                 lead.created_date = datetime.combine(selected_date, datetime.now().time())
-#             except ValueError:
-#                 flash('Data inválida. Use o formato do seletor de data.')
-#                 return render_template('core/edit_leads.html', form=form, lead=lead)
-#         else:
-#             lead.created_date = datetime.now()  # Caso o usuário não insira nada
-
-#         try:
-#             db.session.commit()
-#             flash('Lead editado com sucesso!')
-#         except Exception as e:
-#             db.session.rollback()
-#             flash(f'Erro ao editar o lead: {str(e)}')
-#         return redirect(url_for('core.view_leads_whatsapp'))
-    
-#     return render_template('core/edit_leads.html', form=form, lead=lead)
-
-# #### Excluding Whatsapp Leads
-# @core_blueprint.route('/delete_leads/<int:lead_id>', methods=['POST'])
-# @login_required
-# def delete_leads(lead_id):
-#     lead = LeadWhatsapp.query.get_or_404(lead_id)
-#     db.session.delete(lead)
-#     db.session.commit()
-#     flash('Lead excluído com sucesso!')
-#     return redirect(url_for('core.view_leads_whatsapp'))
-
-from sqlalchemy import literal
 @core_blueprint.route('/leads_whatsapp', methods=['GET'])
 @login_required
 def view_leads_whatsapp():
@@ -377,10 +279,10 @@ def view_leads_whatsapp():
     filters = {
         'name': request.args.get('name', type=str),
         'phone': request.args.get('phone', type=str),
-        'creation_date': request.args.get('creation_date', type=str),
+        'created_date': request.args.get('created_date', type=str),
         'tag': request.args.get('tag', type=str),
         'source': request.args.get('source', type=str),
-        'unit': request.args.get('unit', type=str),
+        'store': request.args.get('store', type=str),
         'region': request.args.get('region', type=str),
         'tags': request.args.get('tags', type=str),
     }
@@ -393,15 +295,14 @@ def view_leads_whatsapp():
     whatsapp = whatsapp.filter(LeadWhatsapp.user_id == current_user.id)
     landingpage = landingpage.filter(LeadLandingPage.user_id == current_user.id)
 
-    # Apply filters
     for attr, value in filters.items():
         if value:
             column_w = getattr(LeadWhatsapp, attr, None)
-            if column_w:
-                whatsapp = whatsapp.filter(column_w == value)
             column_l = getattr(LeadLandingPage, attr, None)
+            if column_w:
+                whatsapp = whatsapp.filter(column_w.ilike(f"%{value}%"))  # ilike for case-insensitive matching
             if column_l:
-                landingpage = landingpage.filter(column_l == value)
+                landingpage = landingpage.filter(column_l.ilike(f"%{value}%"))
 
     # Adjust queries to include 'model_type'
     whatsapp_query = whatsapp.with_entities(
@@ -430,10 +331,7 @@ def view_leads_whatsapp():
         literal('landingpage').label('model_type')
     )
 
-    # Union the queries
     query = whatsapp_query.union_all(landingpage_query)
-
-    # Pagination
     pagination = query.order_by(desc('id')).paginate(page=page, per_page=per_page, error_out=False)
     leads = pagination.items
 
@@ -463,10 +361,8 @@ def edit_leads(model_type, lead_id):
             db.session.rollback()
             flash(f'Erro ao editar o lead: {str(e)}')
     else:
-        # Log form errors for debugging
         print(f"Form errors: {form.errors}")
 
-    # Pass model_type to the template
     return render_template('core/edit_leads.html', form=form, lead=lead, model_type=model_type)
 
 @core_blueprint.route('/delete_leads/<model_type>/<int:lead_id>', methods=['POST'])

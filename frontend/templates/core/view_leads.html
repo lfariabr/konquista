@@ -5,38 +5,38 @@
 
     <!-- Total Leads and Pages Information -->
     <p class="text-center">Total leads: {{ pagination.total }} </p>
-<!-- Filter Form -->
-<form action="{{ url_for('core.view_leads_whatsapp') }}" method="GET" class="mb-4">
-    <div class="form-row">
-        <div class="col">
-            <input type="text" name="name" class="form-control" placeholder="Nome" value="{{ request.args.get('name', '') }}">
+    <!-- Filter Form -->
+    <form action="{{ url_for('core.view_leads_whatsapp') }}" method="GET" class="mb-4">
+        <div class="form-row">
+            <div class="col">
+                <input type="text" name="name" class="form-control" placeholder="Nome" value="{{ request.args.get('name', '') }}">
+            </div>
+            <div class="col">
+                <input type="text" name="phone" class="form-control" placeholder="Telefone" value="{{ request.args.get('phone', '') }}">
+            </div>
+            <div class="col">
+                <input type="date" name="created_date" class="form-control" placeholder="Data de Criação" value="{{ request.args.get('created_date', '') }}">
+            </div>
+            <div class="col">
+                <input type="text" name="tag" class="form-control" placeholder="Tag" value="{{ request.args.get('tag', '') }}">
+            </div>
+            <div class="col">
+                <input type="text" name="source" class="form-control" placeholder="Fonte" value="{{ request.args.get('source', '') }}">
+            </div>
+            <div class="col">
+                <input type="text" name="store" class="form-control" placeholder="Unidade" value="{{ request.args.get('store', '') }}">
+            </div>
+            <div class="col">
+                <input type="text" name="region" class="form-control" placeholder="Região" value="{{ request.args.get('region', '') }}">
+            </div>
+            <div class="col">
+                <input type="text" name="tags" class="form-control" placeholder="Tags" value="{{ request.args.get('tags', '') }}">
+            </div>
+            <div class="col-auto">
+                <button type="submit" class="btn btn-primary">Filtrar</button>
+            </div>
         </div>
-        <div class="col">
-            <input type="text" name="phone" class="form-control" placeholder="Telefone" value="{{ request.args.get('phone', '') }}">
-        </div>
-        <div class="col">
-            <input type="date" name="creation_date" class="form-control" placeholder="Data de Criação" value="{{ request.args.get('creation_date', '') }}">
-        </div>
-        <div class="col">
-            <input type="text" name="tag" class="form-control" placeholder="Tag" value="{{ request.args.get('tag', '') }}">
-        </div>
-        <div class="col">
-            <input type="text" name="source" class="form-control" placeholder="Fonte" value="{{ request.args.get('source', '') }}">
-        </div>
-        <div class="col">
-            <input type="text" name="unit" class="form-control" placeholder="Unidade" value="{{ request.args.get('unit', '') }}">
-        </div>
-        <div class="col">
-            <input type="text" name="region" class="form-control" placeholder="Região" value="{{ request.args.get('region', '') }}">
-        </div>
-        <div class="col">
-            <input type="text" name="tags" class="form-control" placeholder="Tags" value="{{ request.args.get('tags', '') }}">
-        </div>
-        <div class="col-auto">
-            <button type="submit" class="btn btn-primary">Filtrar</button>
-        </div>
-    </div>
-</form>
+    </form>
 
     <!-- Button for CSV upload -->
     <div class="text-center mb-4">

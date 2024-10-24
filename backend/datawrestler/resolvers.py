@@ -3,6 +3,7 @@ import json
 import pandas as pd
 import time
 import sys
+import threading
 from dotenv import load_dotenv
 from datetime import datetime, timedelta
 from backend.config import db, app
@@ -15,7 +16,8 @@ from backend.apicrmgraphql.resolvers.leads_resolver import fetch_all_leads, filt
 from .models import LeadsHandler
 from sqlalchemy import desc
 from sqlalchemy.sql import text
-import threading
+from flask_login import current_user, login_required
+
 load_dotenv()
 
 # Import stop flag from app
@@ -40,8 +42,7 @@ def get_leads_from_core(phone=None):
 
     # Order by created_date in descending order to get the most recent first
     leads_landing = leads_landing.order_by(LeadLandingPage.id.desc()).limit(1).all()
-    leads_whatsapp = leads_whatsapp.order_by(LeadWhatsapp.id.desc()).limit(250).all()
-    # leads_whatsapp = leads_whatsapp.order_by(LeadWhatsapp.id.desc()).offset(213).limit(120).all()
+    leads_whatsapp = leads_whatsapp.order_by(LeadWhatsapp.id.desc()).limit(300).all()
 
     print(f"Got {len(leads_landing)} leads from landing pages.")
     print(f"Got {len(leads_whatsapp)} leads from WhatsApp.")
@@ -53,7 +54,7 @@ def get_leads_landing():
 
 def get_leads_whatsapp():
     # leads = LeadWhatsapp.query.all() # instead we limited!
-    leads = LeadWhatsapp.query.order_by(desc(LeadWhatsapp.id)).limit(250).all()
+    leads = LeadWhatsapp.query.order_by(desc(LeadWhatsapp.id)).limit(300).all()
     print(f"Retrieved {len(leads)} leads from WhatsApp.")
     return leads
 
@@ -71,8 +72,8 @@ def get_leads(start_date, end_date):
 def get_message():
     messages_dic = {}
     try:
-        # Fetching all messages from MessageList table
-        messages = MessageList.query.all()  # Adjust limit if necessary for testing, e.g., query.limit(10)
+        # TODO: optimize performance
+        messages = MessageList.query.all()
         for item in messages:
             type_of_message = item.title
             messages_dic[type_of_message] = {
@@ -86,11 +87,9 @@ def get_message():
         return {}
 
 def get_phone_token():
-    # Creating an empty dic to be filled upon a query
     phones_dic = {}
     phone_list = UserPhone.query.all()
 
-    # For to retrieve each individual phone (id, number and token)
     for phone in phone_list:
         phones_dic[phone.phone_number] = {
             'id': phone.id, 
@@ -118,7 +117,7 @@ def data_wrestling(leads_landing, leads_whatsapp, appointments, count_messages_b
     for lead in df_leads_receive_message:
         phone = lead.phone.strip()
         print(f"Processing phone: {phone}")
-        print(f"Message count for this phone: {sent_messages_phones.get(phone, 'Not found')}")  # Debug print
+        print(f"Message count for this phone: {sent_messages_phones.get(phone, 'Not found')}")
 
         sent_message_count = sent_messages_phones.get(phone, 0)
         has_appointment = phone in appointment_phones
@@ -161,7 +160,7 @@ def data_wrestling(leads_landing, leads_whatsapp, appointments, count_messages_b
     return pd.DataFrame(leads_df)
 
 # Main function to process all the data we have carefully gathered
-def run_data_wrestling():
+def run_data_wrestling(user_id):
     try:
         load_dotenv() # for token usage in cansulation
 
@@ -171,6 +170,7 @@ def run_data_wrestling():
             print("Stopping data wrestling process.")
             yield "Stopping data wrestling process.\n"
             return
+        
         # start_date = datetime(2024, 10, 17) # datetime.now() - timedelta(days=0)
         # end_date = datetime(2024, 10, 17) # datetime.now() + timedelta(days=0)
         start_date = datetime.now() - timedelta(days=15)
@@ -290,38 +290,7 @@ def run_data_wrestling():
                 elif contador == 3:
                     email = "campanha@whatsapp.com"
                     message = f"Lead da campanha {campaign}"
-                    # response = create_lead(name, phone, email, message, store, region)
-                    # # Correctly handle response checking if createdLead exists
-                    # if 'data' in response and 'createLead' in response['data']:
-                    #     print(f"Lead {phone} criado com sucesso!")
-
-                    # try:
-                    #     # Re-fetch the lead to ensure it's in the database
-                    #     lead = db.session.query(LeadWhatsapp).filter_by(phone=cliente['phone']).first()
-                    #     if lead is None:
-                    #         print(f"Failed to find lead with phone {cliente['phone']}")
-                    #         continue  # Skip logging if no lead found
-                    #     log = MessageLog(
-                    #                     sender_phone_id=None,  # No sender phone since it's lead creation
-                    #                     sender_phone_number="N/A",  # Assuming this is allowed in your schema
-                    #                     source="CRM",
-                    #                     lead_phone_id=lead.id if lead else None,
-                    #                     lead_phone_number=cliente['phone'],
-                    #                     status="lead_created",
-                    #                     message_title=f"Lead criado para {campaign}",
-                    #                     message_text=message,
-                    #                     date_sent=datetime.now()
-                    #                 )
-                    #     db.session.add(log)
-                    #     db.session.commit()
-
-                    # except Exception as e:
-                    #     db.session.rollback()
-                    #     print(f"Ops.. fail to log lead creation. Error: {e}")
-                    # # Adding the timer after lead creation
-                    # print(f"Waiting 1 minute before processing the next lead...")
-                    # time.sleep(60)
-                    # continue # Skip message sending...
+                    
                     try:
                     # Create lead in CRM
                         response = create_lead(name, phone, email, message, store, region)
@@ -349,7 +318,8 @@ def run_data_wrestling():
                                 status="lead_created",
                                 message_title=f"Lead criado para {campaign}",
                                 message_text=message,
-                                date_sent=datetime.now()
+                                date_sent=datetime.now(),
+                                user_id=user_id
                             )
                             db.session.add(log)
                             db.session.commit()
@@ -416,7 +386,8 @@ def run_data_wrestling():
                                 status="sent",
                                 message_title=message_key,  # Add this if it's the message ID
                                 message_text=mensagem,
-                                date_sent=datetime.now()
+                                date_sent=datetime.now(),
+                                user_id=user_id
                             )
                     try:
                         db.session.add(log)
@@ -429,37 +400,6 @@ def run_data_wrestling():
     except Exception as e:
         app.logger.error(f"Error while running datawrestler: {e}")
 
-# RUNNING TESTS....
-# def run_data_wrestling(phone_filter=None):
-#     load_dotenv()  # Load environment variables if not already loaded
-
-#     print("Starting DataWrestling")
-#     start_date = datetime.now() - timedelta(days=0)
-#     end_date = datetime.now() + timedelta(days=0)
-
-#     # Fetch leads and messages based on the phone filter
-#     leads_landing, leads_whatsapp = get_leads_from_core(phone=phone_filter)
-#     message_counts = count_sent_messages_to_lead_phone()
-
-#     # Optional: Filter specific leads if phone_filter is used
-#     if phone_filter:
-#         leads_landing = [lead for lead in leads_landing if lead.phone == phone_filter]
-#         leads_whatsapp = [lead for lead in leads_whatsapp if lead.phone == phone_filter]
-
-#     # Debug print to check the fetched data
-#     print("Leads from landing pages:", leads_landing)
-#     print("Leads from WhatsApp:", leads_whatsapp)
-#     print("Message counts:", message_counts)
-
-#     # Combine data into a dictionary to see the overall structure
-#     payload = {
-#         "leads_landing": [{"id": lead.id, "phone": lead.phone} for lead in leads_landing],
-#         "leads_whatsapp": [{"id": lead.id, "phone": lead.phone} for lead in leads_whatsapp],
-#         # "message_counts": message_counts
-#     }
-
-#     return payload
-
 def view_logs():
     logs = MessageLog.query.all()
     for log in logs:
@@ -469,9 +409,3 @@ def view_logs():
               f"Status: {log.status}, "
               f"Sender PhoneNb: {log.sender_phone_number}, "
               f"Date Sent: {log.date_sent}")
-
-# Execute only if we call directly from resolvers.py
-# not in use!
-# if __name__ == "__main__":
-#     with app.app_context():
-#         run_data_wrestling()
