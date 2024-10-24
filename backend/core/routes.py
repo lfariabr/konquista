@@ -120,39 +120,61 @@ def message_logs():
     page = request.args.get('page', 1, type=int)
     per_page = 10
     filters = {
-        'id' : request.args.get('id', type=int),
-        'date_sent' : request.args.get('date_sent', type=str),
-        'message_title' : request.args.get('message_title', type=str),
-        'sender_phone_number' : request.args.get('sender_phone_number', type=str),
-        'lead_phone_number' : request.args.get('lead_phone_number', type=str),
-        'status' : request.args.get('status', type=str),
+        'id': request.args.get('id', type=int),
+        'date_sent': request.args.get('date_sent', type=str),
+        'message_title': request.args.get('message_title', type=str),
+        'sender_phone_number': request.args.get('sender_phone_number', type=str),
+        'lead_phone_number': request.args.get('lead_phone_number', type=str),
+        'status': request.args.get('status', type=str),
     }
 
-    # Building query based on filters + user_id
+    # Build query based on filters + user_id
     query = MessageLog.query.filter_by(user_id=current_user.id)
 
-    for attr, value in filters.items():
-        if value:
-            column = getattr(MessageLog, attr, None)
-            if column:
-                query = query.filter(column == value)
+    # Filter by ID (Exact match)
+    if filters['id']:
+        query = query.filter(MessageLog.id == filters['id'])
+
+    # Filter by Date (Convert string to datetime)
+    if filters['date_sent']:
+        try:
+            date_filter = datetime.strptime(filters['date_sent'], '%Y-%m-%d')
+            query = query.filter(MessageLog.date_sent >= date_filter)
+        except ValueError:
+            return "Invalid date format. Please use YYYY-MM-DD."
+
+    # Filter by Message Title (Exact match or partial match)
+    if filters['message_title']:
+        query = query.filter(MessageLog.message_title.ilike(f"%{filters['message_title']}%"))
+
+    # Filter by Sender Phone Number (Exact match or partial match)
+    if filters['sender_phone_number']:
+        query = query.filter(MessageLog.sender_phone_number.ilike(f"%{filters['sender_phone_number']}%"))
+
+    # Filter by Lead Phone Number (Exact match or partial match)
+    if filters['lead_phone_number']:
+        query = query.filter(MessageLog.lead_phone_number.ilike(f"%{filters['lead_phone_number']}%"))
+
+    # Filter by Status (Exact match)
+    if filters['status']:
+        query = query.filter(MessageLog.status == filters['status'])
 
     try:
         pagination = query.order_by(
-                        desc(MessageLog.id)).paginate(
-                            page=page, per_page=per_page
-                        )
+            desc(MessageLog.id)
+        ).paginate(page=page, per_page=per_page)
+        
         logs = pagination.items
         total_logs = pagination.total
-    except TypeError as e:
-        return "Ops.. couldn't get the logs", 500
+    except Exception as e:
+        return f"Ops.. couldn't get the logs: {str(e)}", 500
 
     return render_template(
-                        'core/message_logs.html', 
-                        logs=logs, 
-                        pagination=pagination, 
-                        total_logs=total_logs
-                        )
+        'core/message_logs.html',
+        logs=logs,
+        pagination=pagination,
+        total_logs=total_logs
+    )
 
 ####################
 # PHONES
