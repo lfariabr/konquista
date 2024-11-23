@@ -2,39 +2,74 @@
 
 {% block content %}
 <!-- Hero Section -->
-<section class="hero-section d-flex align-items-center" style="min-height: 100vh;">
-    <div class="container text-center">
-        <h1>Seu Sistema de Relacionamento via WhatsApp</h1>
-        <h4>Aumente a Eficiência e Engajamento com Seus Leads e Clientes</h4>
-        <br>
-        <p>Automatize suas mensagens e crie uma régua de relacionamento poderosa. 🚀</p>
-        <a href="#contact-form" id="saber-mais-btn" class="btn btn-saber-mais mt-3">SAIBA MAIS</a>
+<section class="hero-section d-flex align-items-center position-relative" style="min-height: 100vh; background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-6 text-white">
+                <h1 class="display-4 fw-bold mb-4">Transforme seu WhatsApp em uma Máquina de Vendas</h1>
+                <p class="lead mb-4">Automatize suas mensagens, aumente o engajamento e converta mais leads em clientes com nossa solução completa de automação.</p>
+                <div class="d-flex gap-3">
+                    <a href="#about-system" class="btn btn-primary btn-lg px-4">Saiba Mais</a>
+                </div>
+            </div>
+            <div class="col-lg-6 d-none d-lg-block">
+                <img src="{{ url_for('static', filename='images/hero-illustration.svg') }}" alt="WhatsApp Automation" class="img-fluid">
+            </div>
+        </div>
+    </div>
+    <div class="position-absolute bottom-0 start-0 w-100 overflow-hidden" style="height: 4rem;">
+        <svg viewBox="0 0 2880 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M0 48h2880V0h-720C1442.5 52 720 0 720 0H0v48z" fill="#f8f9fa"></path>
+        </svg>
     </div>
 </section>
 
 <!-- Benefits Section -->
-<section id="contact-form" class="py-5">
+<section class="benefits-section py-6 bg-light">
     <div class="container">
-        <div class="row justify-content-center">
-            <!-- Pictures Div -->
-            <div class="col-md-6">
-                <h2 class="mb-4 text-center" style="color: #FFFFFF;">Benefícios</h2>
-                <div class="row">
-                    <div class="col-6 mb-3">
-                        <img src="{{ url_for('static', filename='images/whatsapp-automation-1.png') }}" class="img-fluid rounded" alt="Automação de WhatsApp" loading="lazy">
-                        <p class="text-center text-white">Automação de Mensagens</p>
+        <h2 class="text-center display-5 mb-5">Recursos Poderosos para seu Negócio</h2>
+        <div class="row g-4">
+            <div class="col-md-6 col-lg-3">
+                <div class="card h-100 border-0 shadow-sm">
+                    <div class="card-body text-center p-4">
+                        <div class="feature-icon mb-3">
+                            <i class="fas fa-robot fa-2x text-primary"></i>
+                        </div>
+                        <h4 class="card-title">Automação Inteligente</h4>
+                        <p class="card-text">Envie mensagens personalizadas automaticamente para seus leads no momento certo.</p>
                     </div>
-                    <div class="col-6 mb-3">
-                        <img src="{{ url_for('static', filename='images/whatsapp-automation-2.png') }}" class="img-fluid rounded" alt="Engajamento com Leads" loading="lazy">
-                        <p class="text-center text-white">Engajamento Automático</p>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-3">
+                <div class="card h-100 border-0 shadow-sm">
+                    <div class="card-body text-center p-4">
+                        <div class="feature-icon mb-3">
+                            <i class="fas fa-chart-line fa-2x text-primary"></i>
+                        </div>
+                        <h4 class="card-title">Análise Avançada</h4>
+                        <p class="card-text">Acompanhe métricas importantes e tome decisões baseadas em dados reais.</p>
                     </div>
-                    <div class="col-6 mb-3">
-                        <img src="{{ url_for('static', filename='images/whatsapp-automation-3.png') }}" class="img-fluid rounded" alt="Relatórios Detalhados" loading="lazy">
-                        <p class="text-center text-white">Relatórios Detalhados</p>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-3">
+                <div class="card h-100 border-0 shadow-sm">
+                    <div class="card-body text-center p-4">
+                        <div class="feature-icon mb-3">
+                            <i class="fas fa-users fa-2x text-primary"></i>
+                        </div>
+                        <h4 class="card-title">Gestão de Leads</h4>
+                        <p class="card-text">Organize seus contatos e acompanhe todo o histórico de interações.</p>
                     </div>
-                    <div class="col-6 mb-3">
-                        <img src="{{ url_for('static', filename='images/whatsapp-automation-4.png') }}" class="img-fluid rounded" alt="Integração Simples" loading="lazy">
-                        <p class="text-center text-white">Integração Fácil</p>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-3">
+                <div class="card h-100 border-0 shadow-sm">
+                    <div class="card-body text-center p-4">
+                        <div class="feature-icon mb-3">
+                            <i class="fas fa-sync fa-2x text-primary"></i>
+                        </div>
+                        <h4 class="card-title">Integração CRM</h4>
+                        <p class="card-text">Integre facilmente com seu sistema de CRM existente.</p>
                     </div>
                 </div>
             </div>
@@ -43,34 +78,55 @@
 </section>
 
 <!-- Testimonials Section -->
-<section id="testimonials" class="testimonials-section py-5 bg-light">
+<section class="testimonials-section py-6">
     <div class="container">
-        <h2 class="mb-4 text-center" style="color: #000000;">Depoimentos de Empresas</h2>
-        <div class="row">
-            <!-- Testimonial 1 -->
+        <h2 class="text-center display-5 mb-5">O que Nossos Clientes Dizem</h2>
+        <div class="row g-4">
             <div class="col-md-4">
-                <div class="card shadow-sm">
-                    <div class="card-body">
-                        <p class="card-text">"Nosso engajamento com leads triplicou com as mensagens automáticas. Excelente ferramenta!"</p>
-                        <h5 class="card-title">- Carlos M., Diretor de Vendas</h5>
+                <div class="card testimonial-card border-0 shadow-sm h-100">
+                    <div class="card-body p-4">
+                        <div class="d-flex align-items-center mb-3">
+                            <div class="flex-shrink-0">
+                                <img src="{{ url_for('static', filename='images/testimonial-1.jpg') }}" alt="Cliente" class="rounded-circle" width="60">
+                            </div>
+                            <div class="flex-grow-1 ms-3">
+                                <h5 class="mb-0">Carlos Silva</h5>
+                                <p class="text-muted mb-0">Diretor de Vendas</p>
+                            </div>
+                        </div>
+                        <p class="card-text">"Nosso engajamento com leads triplicou desde que começamos a usar o Konquista. A automação é simplesmente fantástica!"</p>
                     </div>
                 </div>
             </div>
-            <!-- Testimonial 2 -->
             <div class="col-md-4">
-                <div class="card shadow-sm">
-                    <div class="card-body">
-                        <p class="card-text">"Agora conseguimos automatizar lembretes de consulta e ainda aumentar a retenção de clientes!"</p>
-                        <h5 class="card-title">- Ana P., Gerente de Relacionamento</h5>
+                <div class="card testimonial-card border-0 shadow-sm h-100">
+                    <div class="card-body p-4">
+                        <div class="d-flex align-items-center mb-3">
+                            <div class="flex-shrink-0">
+                                <img src="{{ url_for('static', filename='images/testimonial-2.jpg') }}" alt="Cliente" class="rounded-circle" width="60">
+                            </div>
+                            <div class="flex-grow-1 ms-3">
+                                <h5 class="mb-0">Ana Paula</h5>
+                                <p class="text-muted mb-0">Gerente de Marketing</p>
+                            </div>
+                        </div>
+                        <p class="card-text">"A facilidade de uso e os resultados obtidos são impressionantes. Nossa equipe adorou a plataforma!"</p>
                     </div>
                 </div>
             </div>
-            <!-- Testimonial 3 -->
             <div class="col-md-4">
-                <div class="card shadow-sm">
-                    <div class="card-body">
-                        <p class="card-text">"A solução perfeita para integrar WhatsApp ao nosso CRM, de forma simples e prática."</p>
-                        <h5 class="card-title">- Marcos L., CEO</h5>
+                <div class="card testimonial-card border-0 shadow-sm h-100">
+                    <div class="card-body p-4">
+                        <div class="d-flex align-items-center mb-3">
+                            <div class="flex-shrink-0">
+                                <img src="{{ url_for('static', filename='images/testimonial-3.jpg') }}" alt="Cliente" class="rounded-circle" width="60">
+                            </div>
+                            <div class="flex-grow-1 ms-3">
+                                <h5 class="mb-0">Marcos Lima</h5>
+                                <p class="text-muted mb-0">CEO</p>
+                            </div>
+                        </div>
+                        <p class="card-text">"O ROI que obtivemos com o Konquista superou todas as nossas expectativas. Recomendo fortemente!"</p>
                     </div>
                 </div>
             </div>
@@ -78,20 +134,35 @@
     </div>
 </section>
 
-<!-- System Information Section for B2B -->
-<section id="about-system" class="py-5">
+<!-- CTA Section -->
+<section class="cta-section py-6 bg-primary text-white">
+    <div class="container text-center">
+        <h2 class="display-5 mb-4">Pronto para Transformar seu Negócio?</h2>
+        <p class="lead mb-4">Comece agora mesmo a automatizar suas conversas no WhatsApp e veja seus resultados crescerem!</p>
+    </div>
+</section>
+
+<!-- Developer Reference Section -->
+<section class="developer-section py-6">
     <div class="container">
-        <h2 class="mb-4 text-center">Por que Escolher Nosso Sistema de Relacionamento?</h2>
-        <p>Nosso sistema de relacionamento via WhatsApp foi desenvolvido para empresas que buscam aumentar sua eficiência e criar uma conexão mais forte com seus leads e clientes. Com ele, você poderá:</p>
-        <ul>
-            <li>Enviar mensagens automáticas para novos leads e clientes.</li>
-            <li>Construir uma régua de relacionamento personalizada, enviando lembretes e acompanhamentos no momento certo.</li>
-            <li>Automatizar lembretes de consultas, retornos e ofertas promocionais, melhorando a experiência do cliente.</li>
-            <li>Integrar o WhatsApp diretamente ao seu CRM ou plataforma de vendas.</li>
-            <li>Obter relatórios detalhados de engajamento, conversão e comportamento de seus leads.</li>
-        </ul>
-        <p>Com nossa solução, você pode garantir que está aproveitando ao máximo cada interação, sem precisar se preocupar com o envio manual de mensagens. Automatize, conecte-se e cresça de forma escalável.</p>
-        <p>Entre em contato para uma demonstração gratuita e descubra como podemos ajudar sua empresa a alcançar novos patamares de relacionamento com o cliente!</p>
+        <div class="row justify-content-center">
+            <div class="col-lg-8 text-center">
+                <div class="card border-0 shadow-sm bg-dark text-white">
+                    <div class="card-body p-5">
+                        <div class="mb-4">
+                            <i class="fas fa-code fa-3x text-primary"></i>
+                        </div>
+                        <h2 class="mb-4">Desenvolvido por Luis Faria</h2>
+                        <p class="lead mb-4">Software Engineer | Full Stack Developer</p>
+                        <p class="mb-4">Especialista em desenvolvimento de soluções web modernas e sistemas de automação.</p>
+                        <a href="https://luisfaria.dev/" target="_blank" class="btn btn-primary btn-lg px-5">
+                            <i class="fas fa-external-link-alt me-2"></i>
+                            Visite meu Portfolio
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </section>
 {% endblock %}
@@ -99,8 +170,16 @@
 {% block scripts %}
 <script>
     $(document).ready(function(){
-        // Aplicar máscara no campo de telefone
-        $('.phone-mask').mask('(00) 00000-0000');
+        // Smooth scroll for anchor links
+        $('a[href^="#"]').on('click', function(e) {
+            e.preventDefault();
+            var target = $(this.hash);
+            if (target.length) {
+                $('html, body').animate({
+                    scrollTop: target.offset().top - 80
+                }, 800);
+            }
+        });
     });
 </script>
 {% endblock %}

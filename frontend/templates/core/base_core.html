@@ -3,34 +3,33 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Konquista - Relacionamento com Leads</title>
+    <meta name="description" content="Konquista - Sistema de Relacionamento via WhatsApp para automação de mensagens e gestão de leads">
+    <meta name="keywords" content="WhatsApp, automação, leads, marketing, relacionamento, CRM">
+    <title>{% block title %}Konquista - Relacionamento com Leads{% endblock %}</title>
 
     <!-- Favicon -->
     <link rel="icon" href="{{ url_for('static', filename='images/favicon.ico') }}" type="image/x-icon">
     
     <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" 
-          integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" 
-          crossorigin="anonymous">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
 
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
     
-    <!-- Font Awesome for Icons (Optional) -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" 
-          integrity="sha512-pVnU6f6G7U5+F7+P6uO4VdTjS2GZsFx9WdD4JxEo3cGfb9yD7LKXZpQh+Z6LXb7+3vJHCiDc6NnQZ1O6mU0Gg==" 
-          crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <!-- Custom CSS -->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    {% block extra_css %}{% endblock %}
     
     <style>
         /* Global Styles - Dark Theme */
         body {
             font-family: 'Montserrat', sans-serif;
-            font-size: 12px; /* Reduced font size */
-            background-color: #121212; /* Dark background */
-            color: #e0e0e0; /* Light text */
+            font-size: 12px;
+            background-color: #121212;
+            color: #e0e0e0;
             margin: 0;
             padding: 0;
         }
@@ -244,81 +243,30 @@
     </style>
 </head>
 <body>
-<!-- Navbar -->
-<nav class="navbar navbar-expand-lg navbar-custom fixed-top">
-    <a class="navbar-brand" href="{{ url_for('index') }}">Konquista</a>
-    <div class="collapse navbar-collapse" id="navbarNav">
-        <ul class="navbar-nav ml-auto">
-            {% if current_user.is_authenticated %}
-            <li class="nav-item">
-                <a class="nav-link" href="{{ url_for('core.index') }}">Core</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="{{ url_for('core.view_leads_whatsapp') }}">Contatos</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="{{ url_for('core.phone_list') }}">Telefones</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="{{ url_for('core.message_list') }}">Mensagens</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="{{ url_for('users.logout') }}">Logout</a>
-            </li>
-            {% else %}
-            <li class="nav-item">
-                <a class="nav-link" href="{{ url_for('core.index') }}">Login</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="{{ url_for('users.register') }}">Register</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="#services">Serviços</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="#about">Sobre Nós</a>
-            </li>
-            {% endif %}
-        </ul>
-    </div>
-    {% if not current_user.is_authenticated %}
-    <a class="btn-saber-mais ml-auto" href="#contact-form">SABER MAIS</a>
+    <!-- Alert Container for JavaScript notifications -->
+    <div class="alert-container position-fixed top-0 end-0 p-3" style="z-index: 1050;"></div>
+
+    <!-- Navbar -->
+    {% include 'components/navigation/navbar.html' %}
+
+    <!-- Main Content -->
+    <main class="content-wrapper">
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Footer -->
+    {% include 'components/navigation/footer.html' %}
+
+    <!-- Core JavaScript -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    
+    <!-- Page Specific JavaScript -->
+    {% block extra_js %}{% endblock %}
+
+    <!-- Analytics -->
+    {% if config.ENABLE_ANALYTICS %}
+    <!-- Add your analytics code here -->
     {% endif %}
-</nav>
-
-
-<!-- Flash Messages -->
-<div class="container mt-5 pt-5">
-    {% with messages = get_flashed_messages(with_categories=true) %}
-        {% if messages %}
-            {% for category, message in messages %}
-                <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
-                    {{ message }}
-                    <button type="button" class="close" data-dismiss="alert" aria-label="Fechar">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-            {% endfor %}
-        {% endif %}
-    {% endwith %}
-</div>
-
-<!-- Dynamic Content -->
-{% block content %}{% endblock %}
-
-<!-- Modal Overlay -->
-<div class="modal-overlay" id="modal-overlay">
-    <div class="modal-content">
-        <span class="close-modal" id="close-modal">&times;</span>
-        <h2>Mais Informações</h2>
-        <p>Insira aqui mais informações ou um formulário adicional.</p>
-    </div>
-</div>
-
-<!-- Footer -->
-<footer class="footer-custom">
-    <p>&copy; 2024 Konquista. Todos os direitos reservados.</p>
-    <p><a href="mailto:contato@konquista.com.br">contato@konquista.com.br</a></p>
-    <p class="social-icons">
-        <a href="https://facebook.com/seuPerfil" target="_blank"><i class="fab fa-facebook-f"></i></a>
-        <a href="https://instagram.com/seuPerfil" target="_blank"><i class="fab fa-instagram"></i></a>
+</body>
+</html>
