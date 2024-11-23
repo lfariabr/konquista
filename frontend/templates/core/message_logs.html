@@ -1,0 +1,117 @@
+{% extends "core/base_core.html" %}
+{% block content %}
+
+<section class="core-section py-5">
+    <div class="container">
+        <h1 class="text-center mb-5">Logs de Mensagens Enviadas</h1>
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h2>Message Logs</h2>
+            <a href="{{ url_for('core.export_message_logs') }}" class="btn btn-success">
+                <i class="fas fa-download"></i> Export to CSV
+            </a>
+        </div>
+<!-- Filter Form -->
+<form action="{{ url_for('core.message_logs') }}" method="GET" class="mb-4">
+    <div class="form-row">
+        <div class="col">
+            <input type="text" name="id" class="form-control" placeholder="ID" value="{{ request.args.get('id', '') }}">
+        </div>
+        <div class="col">
+            <input type="date" name="date_sent" class="form-control" placeholder="Data de Envio" value="{{ request.args.get('date_sent', '') }}">
+        </div>
+        <div class="col">
+            <input type="text" name="message_title" class="form-control" placeholder="Título da Mensagem" value="{{ request.args.get('message_title', '') }}">
+        </div>
+        <div class="col">
+            <input type="text" name="sender_phone_number" class="form-control" placeholder="Número do Disparador" value="{{ request.args.get('sender_phone_number', '') }}">
+        </div>
+        <div class="col">
+            <input type="text" name="lead_phone_number" class="form-control" placeholder="Destino (Lead)" value="{{ request.args.get('lead_phone_number', '') }}">
+        </div>
+        <div class="col">
+            <input type="text" name="status" class="form-control" placeholder="Status" value="{{ request.args.get('status', '') }}">
+        </div>
+        <div class="col-auto">
+            <button type="submit" class="btn btn-primary">Filtrar</button>
+        </div>
+    </div>
+</form>
+        <!-- Display total logs count -->
+        <p class="text-center">Total Logs: {{ total_logs }}</p>
+
+        {% if logs %}
+        <div class="table-responsive">
+            <table class="table table-hover table-bordered">
+                <thead class="thead-dark">
+                    <tr>
+                        <th>ID</th>
+                        <th>Data de Envio</th>
+                        <th>Mensagem</th>
+                        <th>Título da Mensagem</th>
+                        <th>Número do Disparador</th>
+                        <th>Destino (Lead)</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for log in logs %}
+                    <tr>
+                        <td>{{ log.id }}</td>
+                        <td>{{ log.date_sent.strftime('%d/%m/%Y %H:%M:%S') }}</td> <!-- Formatting datetime -->
+                        <td>{{ log.message_text }}</td>
+                        <td>{{ log.message_title }}</td>
+                        <td>{{ log.sender_phone_number }}</td>
+                        <td>{{ log.lead_phone_number }}</td>
+                        <td>
+                            {% if log.status == "sent" %}
+                                <span class="badge badge-success">Enviado</span>
+                            {% else %}
+                                <span class="badge badge-danger">{{ log.status }}</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Pagination controls -->
+        <nav aria-label="Message log pagination">
+            <ul class="pagination justify-content-center">
+                <!-- Previous button -->
+                <li class="page-item {% if not pagination.has_prev %}disabled{% endif %}">
+                    <a class="page-link" href="{{ url_for('core.message_logs', page=pagination.prev_num) }}" aria-label="Previous">
+                        &laquo; Anterior
+                    </a>
+                </li>
+
+                <!-- Current page indicator -->
+                <li class="page-item active">
+                    <span class="page-link">Página {{ pagination.page }} de {{ pagination.pages }}</span>
+                </li>
+
+                <!-- Next button -->
+                <li class="page-item {% if not pagination.has_next %}disabled{% endif %}">
+                    <a class="page-link" href="{{ url_for('core.message_logs', page=pagination.next_num) }}" aria-label="Next">
+                        Próxima &raquo;
+                    </a>
+                </li>
+            </ul>
+        </nav>
+
+        <!-- "Go to page" input field -->
+        <form method="GET" action="{{ url_for('core.message_logs') }}" class="form-inline justify-content-center mt-3">
+            <label class="mr-2" for="page-input">Ir para página:</label>
+            <input type="number" name="page" id="page-input" class="form-control mr-2" placeholder="Número da página" min="1" max="{{ pagination.pages }}" required>
+            <button type="submit" class="btn btn-primary">Ir</button>
+        </form>
+
+        {% else %}
+            <div class="alert alert-info text-center" role="alert">
+                Não há logs de mensagens disponíveis.
+            </div>
+        {% endif %}
+    </div>
+</section>
+
+{% endblock %}

@@ -1,0 +1,39 @@
+{% extends "core/base_core.html" %}
+
+{% block content %}
+<section class="core-section py-5">
+    <div class="container">
+        <h2 class="mb-4">Lista de Telefones</h2>
+        <a href="{{ url_for('core.new_phone') }}" class="btn btn-primary mb-3">Cadastrar Novo Telefone</a>
+        
+        <div class="table-responsive">
+            <table class="table table-hover table-bordered">
+                <thead class="thead-dark">
+                    <tr>
+                    <th>#</th>
+                    <th>Telefone</th>
+                    <th>Descrição</th>
+                    <th>Token</th>
+                    <th>Ações</th>  <!-- Coluna para as ações -->
+                </tr>
+            </thead>
+            <tbody>
+                {% for phone in phones %}
+                <tr>
+                    <td>{{ phone.id }}</td>
+                    <td>{{ phone.phone_number }}</td>
+                    <td>{{ phone.phone_description }}</td>
+                    <td>{{ phone.phone_token }}</td>
+                    <td>
+                        <a href="{{ url_for('core.edit_phone', id=phone.id) }}" class="btn btn-warning btn-sm">Editar</a>
+                        <form action="{{ url_for('core.delete_phone', id=phone.id) }}" method="POST" style="display:inline;">
+                            <button type="submit" class="btn btn-danger btn-sm">Deletar</button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</section>
+{% endblock %}

@@ -1,0 +1,78 @@
+{% extends "base_core.html" %}
+{% block content %}
+
+<!-- Hero Section -->
+<section class="hero-section d-flex align-items-center" style="min-height: 100vh; background-color: #f5f7fa;">
+    <div class="container text-center">
+        <h1 style="color: #6c5ce7; font-weight: 800;">Welcome to Pró-Corpo</h1>
+        <h4 style="color: #7f8c8d; margin-top: 20px;">Your journey to a more confident you starts here!</h4>
+        <br>
+        <p style="color: #2d3436; font-size: 1.2rem;">Experience the best in aesthetic treatments with our professional services.</p>
+        <a href="#get-started-form" class="btn btn-primary mt-3" style="background-color: #6c5ce7; border:none; padding: 10px 20px; border-radius: 50px;">Get Started</a>
+    </div>
+</section>
+
+<!-- Introduction Section -->
+<section class="py-5">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-md-6">
+                <h2 style="color: #6c5ce7; font-weight: 700;">Why Choose Pró-Corpo?</h2>
+                <p style="color: #636e72; margin-top: 20px;">At Pró-Corpo, we are dedicated to helping you achieve your desired look. Our team of experienced professionals uses the latest techniques and products to provide you with exceptional results. Whether you're looking to reduce wrinkles with Botox, sculpt your body, or rejuvenate your skin, we have the right solution for you.</p>
+                <ul style="color: #2d3436; list-style-type: none; padding: 0;">
+                    <li><i class="fas fa-check-circle" style="color: #6c5ce7;"></i> Expert and certified professionals</li>
+                    <li><i class="fas fa-check-circle" style="color: #6c5ce7;"></i> Personalized treatment plans</li>
+                    <li><i class="fas fa-check-circle" style="color: #6c5ce7;"></i> State-of-the-art technology</li>
+                    <li><i class="fas fa-check-circle" style="color: #6c5ce7;"></i> Safe and comfortable environment</li>
+                </ul>
+            </div>
+            <div class="col-md-6">
+                <img src="{{ url_for('static', filename='images/why-choose-us.png') }}" alt="Why Choose Us" class="img-fluid rounded">
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Get Started Form Section -->
+<section id="get-started-form" class="py-5" style="background-color: #f5f7fa;">
+    <div class="container">
+        <div class="card p-4 shadow" style="border-radius: 15px; max-width: 600px; margin: auto;">
+            <h2 class="text-center" style="color: #6c5ce7; font-weight: 700;">Get Started Today</h2>
+            <p class="text-center" style="color: #7f8c8d; margin-bottom: 2rem;">Fill in the form below to book your consultation</p>
+            
+            <form method="POST">
+                {{ form.hidden_tag() }}
+
+                <div class="form-group">
+                    {{ form.name.label(class="font-weight-bold") }}
+                    {{ form.name(class="form-control", placeholder="Enter your name") }}
+                    {% for error in form.name.errors %}
+                    <small class="text-danger">[{{ error }}]</small>
+                    {% endfor %}
+                </div>
+
+                <div class="form-group">
+                    {{ form.email.label(class="font-weight-bold") }}
+                    {{ form.email(class="form-control", placeholder="Enter your email") }}
+                    {% for error in form.email.errors %}
+                    <small class="text-danger">[{{ error }}]</small>
+                    {% endfor %}
+                </div>
+
+                <div class="form-group">
+                    {{ form.phone.label(class="font-weight-bold") }}
+                    {{ form.phone(class="form-control phone-mask", placeholder="Enter your phone number") }}
+                    {% for error in form.phone.errors %}
+                    <small class="text-danger">[{{ error }}]</small>
+                    {% endfor %}
+                </div>
+
+                <div class="text-center">
+                    {{ form.submit(class="btn btn-primary btn-block", style="background-color: #6c5ce7; border:none;") }}
+                </div>
+            </form>
+        </div>
+    </div>
+</section>
+
+{% endblock %}

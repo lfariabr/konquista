@@ -1,0 +1,47 @@
+{% extends "core/base_core.html" %}
+{% block content %}
+
+    <div class="jumbotron text-center" style="background-color: #f8f9fa; padding: 2rem; border-radius: 15px;">
+        <h1 style="color: #6c5ce7;">Join Whatsapp Lab!</h1>
+        <p style="font-size: 1.2rem; color: #555;">Register now to be part of the experience</p>
+    </div>
+
+    <div class="container mt-5" style="max-width: 600px;">
+        <form method="POST" class="needs-validation" novalidate>
+
+            {{ form.hidden_tag() }}
+
+            <div class="form-group">
+                <label for="email" class="font-weight-bold">Email Address</label>
+                {{ form.email(class="form-control", id="email", placeholder="Enter your email") }}
+                {% for error in form.email.errors %}
+                    <small class="text-danger">[{{ error }}]</small>
+                {% endfor %}
+            </div>
+
+            <div class="form-group">
+                <label for="username" class="font-weight-bold">Username</label>
+                {{ form.username(class="form-control", id="username", placeholder="Choose a username") }}
+                {% for error in form.username.errors %}
+                    <small class="text-danger">[{{ error }}]</small>
+                {% endfor %}
+            </div>
+
+            <div class="form-group">
+                <label for="password" class="font-weight-bold">Password</label>
+                {{ form.password(class="form-control", id="password", placeholder="Enter your password") }}
+                {% for error in form.password.errors %}
+                    <small class="text-danger">[{{ error }}]</small>
+                {% endfor %}
+            </div>
+
+
+            <div class="form-group text-center">
+                <button type="submit" class="btn btn-primary btn-lg" style="background-color: #6c5ce7; border-color: #6c5ce7;">
+                    {{ form.submit.label.text }}
+                </button>
+            </div>
+        </form>
+    </div>
+
+{% endblock %}

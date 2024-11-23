@@ -1,0 +1,57 @@
+{% extends "core/base_core.html" %}
+
+{% block content %}
+<section class="core-section py-5">
+    <div class="container">
+        <h1 class="text-center mb-5">Área Principal</h1>
+        <div class="row">
+            <!-- Box 1: Contatos -->
+            <div class="col-md-3 mb-4">
+                <div class="card h-100 text-center shadow-sm">
+                    <div class="card-body">
+                        <h4 class="card-title">Contatos</h4>
+                        <p class="card-text">Gerencie e visualize todos os contatos cadastrados.</p>
+                        <a href="{{ url_for('core.view_leads_whatsapp') }}" class="btn btn-primary">Acessar</a>
+                    </div>
+                </div>
+            </div>
+            <!-- Box 2: Números de Telefone -->
+            <div class="col-md-3 mb-4">
+                <div class="card h-100 text-center shadow-sm">
+                    <div class="card-body">
+                        <h4 class="card-title">Telefone</h4>
+                        <p class="card-text">Visualize e edite os seus números de telefone.</p>
+                        <a href="{{ url_for('core.phone_list') }}" class="btn btn-primary">Acessar</a>
+                    </div>
+                </div>
+            </div>
+            <!-- Box 3: Mensagens -->
+            <div class="col-md-3 mb-4">
+                <div class="card h-100 text-center shadow-sm">
+                    <div class="card-body">
+                        <h4 class="card-title">Mensagens</h4>
+                        <p class="card-text">Configure, visualize e gerencie mensagens para os contatos.</p>
+                        <a href="{{ url_for('core.message_list') }}" class="btn btn-primary">Acessar</a>
+                    </div>
+                </div>
+            </div>
+            <!-- Box 4: Administrativo -->
+            <div class="col-md-3 mb-4">
+                <div class="card h-100 text-center shadow-sm">
+                    <div class="card-body">
+                        <h4 class="card-title">Administrativo</h4>
+                        <p class="card-text">Permissões, acessos e usuários.</p>
+                        <a href="{{ url_for('core.index') }}" class="btn btn-primary">Acessar</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // Adicione scripts adicionais aqui, se necessário
+</script>
+{% endblock %}

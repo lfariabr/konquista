@@ -1,0 +1,106 @@
+{% extends "core/base_core.html" %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero-section d-flex align-items-center" style="min-height: 100vh;">
+    <div class="container text-center">
+        <h1>Seu Sistema de Relacionamento via WhatsApp</h1>
+        <h4>Aumente a Eficiência e Engajamento com Seus Leads e Clientes</h4>
+        <br>
+        <p>Automatize suas mensagens e crie uma régua de relacionamento poderosa. 🚀</p>
+        <a href="#contact-form" id="saber-mais-btn" class="btn btn-saber-mais mt-3">SAIBA MAIS</a>
+    </div>
+</section>
+
+<!-- Benefits Section -->
+<section id="contact-form" class="py-5">
+    <div class="container">
+        <div class="row justify-content-center">
+            <!-- Pictures Div -->
+            <div class="col-md-6">
+                <h2 class="mb-4 text-center" style="color: #FFFFFF;">Benefícios</h2>
+                <div class="row">
+                    <div class="col-6 mb-3">
+                        <img src="{{ url_for('static', filename='images/whatsapp-automation-1.png') }}" class="img-fluid rounded" alt="Automação de WhatsApp" loading="lazy">
+                        <p class="text-center text-white">Automação de Mensagens</p>
+                    </div>
+                    <div class="col-6 mb-3">
+                        <img src="{{ url_for('static', filename='images/whatsapp-automation-2.png') }}" class="img-fluid rounded" alt="Engajamento com Leads" loading="lazy">
+                        <p class="text-center text-white">Engajamento Automático</p>
+                    </div>
+                    <div class="col-6 mb-3">
+                        <img src="{{ url_for('static', filename='images/whatsapp-automation-3.png') }}" class="img-fluid rounded" alt="Relatórios Detalhados" loading="lazy">
+                        <p class="text-center text-white">Relatórios Detalhados</p>
+                    </div>
+                    <div class="col-6 mb-3">
+                        <img src="{{ url_for('static', filename='images/whatsapp-automation-4.png') }}" class="img-fluid rounded" alt="Integração Simples" loading="lazy">
+                        <p class="text-center text-white">Integração Fácil</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Testimonials Section -->
+<section id="testimonials" class="testimonials-section py-5 bg-light">
+    <div class="container">
+        <h2 class="mb-4 text-center" style="color: #000000;">Depoimentos de Empresas</h2>
+        <div class="row">
+            <!-- Testimonial 1 -->
+            <div class="col-md-4">
+                <div class="card shadow-sm">
+                    <div class="card-body">
+                        <p class="card-text">"Nosso engajamento com leads triplicou com as mensagens automáticas. Excelente ferramenta!"</p>
+                        <h5 class="card-title">- Carlos M., Diretor de Vendas</h5>
+                    </div>
+                </div>
+            </div>
+            <!-- Testimonial 2 -->
+            <div class="col-md-4">
+                <div class="card shadow-sm">
+                    <div class="card-body">
+                        <p class="card-text">"Agora conseguimos automatizar lembretes de consulta e ainda aumentar a retenção de clientes!"</p>
+                        <h5 class="card-title">- Ana P., Gerente de Relacionamento</h5>
+                    </div>
+                </div>
+            </div>
+            <!-- Testimonial 3 -->
+            <div class="col-md-4">
+                <div class="card shadow-sm">
+                    <div class="card-body">
+                        <p class="card-text">"A solução perfeita para integrar WhatsApp ao nosso CRM, de forma simples e prática."</p>
+                        <h5 class="card-title">- Marcos L., CEO</h5>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- System Information Section for B2B -->
+<section id="about-system" class="py-5">
+    <div class="container">
+        <h2 class="mb-4 text-center">Por que Escolher Nosso Sistema de Relacionamento?</h2>
+        <p>Nosso sistema de relacionamento via WhatsApp foi desenvolvido para empresas que buscam aumentar sua eficiência e criar uma conexão mais forte com seus leads e clientes. Com ele, você poderá:</p>
+        <ul>
+            <li>Enviar mensagens automáticas para novos leads e clientes.</li>
+            <li>Construir uma régua de relacionamento personalizada, enviando lembretes e acompanhamentos no momento certo.</li>
+            <li>Automatizar lembretes de consultas, retornos e ofertas promocionais, melhorando a experiência do cliente.</li>
+            <li>Integrar o WhatsApp diretamente ao seu CRM ou plataforma de vendas.</li>
+            <li>Obter relatórios detalhados de engajamento, conversão e comportamento de seus leads.</li>
+        </ul>
+        <p>Com nossa solução, você pode garantir que está aproveitando ao máximo cada interação, sem precisar se preocupar com o envio manual de mensagens. Automatize, conecte-se e cresça de forma escalável.</p>
+        <p>Entre em contato para uma demonstração gratuita e descubra como podemos ajudar sua empresa a alcançar novos patamares de relacionamento com o cliente!</p>
+    </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    $(document).ready(function(){
+        // Aplicar máscara no campo de telefone
+        $('.phone-mask').mask('(00) 00000-0000');
+    });
+</script>
+{% endblock %}

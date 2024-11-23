@@ -1,0 +1,61 @@
+{% extends "core/base_core.html" %}
+
+{% block content %}
+<div class="container">
+    <h2>Editar Lead: {{ lead.name }}</h2>
+
+    <!-- The action must correctly point to the dynamic model_type -->
+    <form method="POST" action="{{ url_for('core.edit_leads', model_type=model_type, lead_id=lead.id) }}">
+        {{ form.hidden_tag() }}
+
+        <div class="form-group">
+            <label for="name">Nome</label>
+            {{ form.name(class="form-control", id="name") }}
+        </div>
+
+        <div class="form-group">
+            <label for="phone">Telefone</label>
+            {{ form.phone(class="form-control", id="phone") }}
+        </div>
+
+        <!-- Conditionally display fields only if they exist in the form -->
+        {% if form.tag %}
+        <div class="form-group">
+            <label for="tag">Tag</label>
+            {{ form.tag(class="form-control", id="tag") }}
+        </div>
+        {% endif %}
+
+        {% if form.source %}
+        <div class="form-group">
+            <label for="source">Fonte</label>
+            {{ form.source(class="form-control", id="source") }}
+        </div>
+        {% endif %}
+
+        {% if form.store %}
+        <div class="form-group">
+            <label for="store">Unidade</label>
+            {{ form.store(class="form-control", id="store") }}
+        </div>
+        {% endif %}
+
+        {% if form.region %}
+        <div class="form-group">
+            <label for="region">Região</label>
+            {{ form.region(class="form-control", id="region") }}
+        </div>
+        {% endif %}
+
+        {% if form.tags %}
+        <div class="form-group">
+            <label for="tags">Tags</label>
+            {{ form.tags(class="form-control", id="tags") }}
+        </div>
+        {% endif %}
+
+        <button type="submit" class="btn btn-primary">Salvar Alterações</button>
+        <a href="{{ url_for('core.view_leads_whatsapp') }}" class="btn btn-secondary">Cancelar</a>
+    </form>
+</div>
+{% endblock %}

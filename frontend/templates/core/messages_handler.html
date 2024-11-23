@@ -1,0 +1,86 @@
+{% extends "core/base_core.html" %}
+
+{% block content %}
+<section class="core-section py-5">
+    <div class="container">
+        <h2 class="mb-4">Disparador Manual</h2>
+        <p>Clique nos botões abaixo para iniciar ou parar o processamento de dados.</p>
+
+        <!-- Botão para disparar o processamento de dados -->
+        <form id="data-wrestling-form" method="POST">
+            <button id="run-button" type="submit" class="btn btn-primary mb-3">Iniciar</button>
+            <button id="stop-button" type="button" class="btn btn-danger mb-3">Parar</button>
+            <div id="spinner" class="spinner" style="display: none; margin-top: 10px;"></div>
+        </form>
+
+        <!-- Logs aparecerão aqui -->
+        <h4>Logs:</h4>
+        <pre id="logs" class="form-control" style="height: 300px; overflow-y: scroll;"></pre>
+    </div>
+</section>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script type="text/javascript">
+    $(document).ready(function() {
+        var processRunning = false;  // Track the state of the process
+
+        // Function to handle starting the data wrestling process
+        $('#data-wrestling-form').on('submit', function(e) {
+            e.preventDefault();
+            if (processRunning) {
+                alert("Process already running.");
+                return;
+            }
+            $('#logs').html('Processing started...');  // Initial message
+            $('#spinner').show();  // Show spinner
+            $('#run-button').prop('disabled', true);  // Disable start button
+
+            $.ajax({
+                url: "{{ url_for('core.run_datawrestler_route') }}",
+                type: 'POST',
+                success: function(response) {
+                    // Check if the process was started successfully on the server
+                    if (response.message === "Data wrestling process started successfully") {
+                        processRunning = true;  // Mark the process as running
+                        $('#logs').append('\nProcess started successfully.');
+                    } else {
+                        $('#logs').append('\nError: ' + response.message);
+                    }
+                },
+                error: function() {
+                    $('#spinner').hide();  // Hide the spinner in case of error
+                    $('#run-button').prop('disabled', false);  // Enable start button
+                    $('#logs').html('An error occurred while starting the process.');
+                }
+            });
+        });
+
+        // Function to handle stopping the data wrestling process
+        $('#stop-button').on('click', function() {
+            if (!processRunning) {
+                alert("No process is running.");
+                return;
+            }
+            $('#logs').append('\nStopping process...');  // Log the stop action
+            $('#spinner').hide();  // Hide the spinner
+            $('#run-button').prop('disabled', false);  // Enable start button
+
+            $.ajax({
+                url: "{{ url_for('core.stop_datawrestler_route') }}",
+                type: 'POST',
+                success: function(response) {
+                    if (response.message === "Data wrestling process stopped successfully") {
+                        processRunning = false;  // Mark the process as not running
+                        $('#logs').append('\nProcess stopped.');
+                    } else {
+                        $('#logs').append('\nError: ' + response.message);
+                    }
+                },
+                error: function() {
+                    $('#logs').append('\nError while stopping the process.');
+                }
+            });
+        });
+    });
+</script>
+{% endblock %}

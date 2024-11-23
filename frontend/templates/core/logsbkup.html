@@ -1,0 +1,53 @@
+{% extends "core/base_core.html" %}
+
+{% block content %}
+<section class="core-section py-5">
+    <div class="container">
+        <h2 class="mb-4">Disparador Manual</h2>
+        <p>Clique no botão abaixo para iniciar o processamento de dados.</p>
+
+        <!-- Botão para disparar o processamento de dados -->
+        <form id="data-wrestling-form" method="POST">
+            <button id="run-button" type="submit" class="btn btn-primary mb-3">Iniciar</button>
+            <div id="spinner" class="spinner" style="display: none; margin-top: 10px;"></div>
+        </form>
+
+        <!-- Logs aparecerão aqui -->
+        <h4>Logs:</h4>
+        <pre id="logs" class="form-control" style="height: 300px; overflow-y: scroll;"></pre>
+    </div>
+</section>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script type="text/javascript">
+    $(document).ready(function() {
+        $('#data-wrestling-form').on('submit', function(e) {
+            e.preventDefault();
+            $('#logs').html('Processing started...');  // Mensagem inicial
+            $('#spinner').show();  // Exibir spinner
+            $('#run-button').prop('disabled', true);  // Desabilitar o botão enquanto processa
+
+            $.ajax({
+                url: "{{ url_for('core.run_datawrestler_route') }}",
+                type: 'POST',
+                xhrFields: {
+                    onprogress: function(e) {
+                        var logs = e.currentTarget.responseText;
+                        $('#logs').append(logs);  // Adiciona logs progressivamente
+                    }
+                },
+                success: function() {
+                    $('#spinner').hide();  // Esconde o spinner quando o processamento terminar
+                    $('#run-button').prop('disabled', false);  // Reabilitar o botão após a conclusão
+                    console.log('Data wrestling completed.');
+                },
+                error: function() {
+                    $('#spinner').hide();  // Esconde o spinner em caso de erro
+                    $('#run-button').prop('disabled', false);  // Reabilitar o botão em caso de erro
+                    $('#logs').html('An error occurred.');
+                }
+            });
+        });
+    });
+</script>
+{% endblock %}

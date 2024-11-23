@@ -1,0 +1,36 @@
+{% extends "core/base_core.html" %}
+
+{% block content %}
+<section class="core-section py-5">
+    <div class="container">
+        <h1 class="text-center mb-5">Subir Leads</h1>
+        <div class="row">
+            <!-- Upload Form Box -->
+            <div class="col-md-6 mb-4 mx-auto">
+                <div class="card h-100 text-center shadow-sm">
+                    <div class="card-body">
+                        <h4 class="card-title">Upload de Planilha</h4>
+                        <p class="card-text">Suba uma planilha com os campos: name, phone, tag (opcional), source (opcional).</p>
+                        <form method="POST" action="{{ url_for('leadgen.upload') }}" enctype="multipart/form-data">
+                            <div class="form-group">
+                                <label for="date">Selecionar Data:</label>
+                                <input type="date" name="date" class="form-control">
+                                <small class="form-text text-muted">Selecione uma data. Se não for selecionada, a data atual será usada.</small>
+                            </div>
+                            <div class="form-group">
+                                <input type="file" name="botox_file" class="form-control">
+                                <small class="form-text text-muted">Arquivo de Botox (.csv, .xlsx).</small>
+                            </div>
+                            <div class="form-group">
+                                <input type="file" name="preenchimento_file" class="form-control">
+                                <small class="form-text text-muted">Arquivo de Preenchimento (.csv, .xlsx).</small>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Upload</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

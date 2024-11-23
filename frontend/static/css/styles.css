@@ -1,0 +1,162 @@
+/* styles.css */
+
+/* Global Styles */
+body {
+    font-family: 'Montserrat', sans-serif;
+    background-color: #121212; /* Dark background */
+    color: #e0e0e0; /* Light text */
+    margin: 0;
+    padding: 0;
+}
+
+/* Navbar Styling */
+.navbar-custom {
+    background-color: rgba(18, 18, 18, 0.9); /* Semi-transparent dark background */
+    padding: 1rem 2rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+    transition: background-color 0.3s ease;
+}
+
+.navbar-custom.scrolled {
+    background-color: rgba(18, 18, 18, 1); /* Slightly different on scroll */
+    transition: background-color 0.3s ease;
+}
+
+.navbar-custom .navbar-brand {
+    font-weight: 700;
+    font-size: 1.8rem;
+    color: #ff6ec7 !important; /* Pink Brand Color */
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
+
+.navbar-custom .navbar-brand:hover {
+    color: #ff85c0 !important;
+    transition: color 0.3s ease;
+}
+
+.navbar-custom .nav-item .nav-link {
+    color: #e0e0e0 !important;
+    margin-left: 1.2rem;
+    font-weight: 500;
+    transition: color 0.3s ease;
+}
+
+.navbar-custom .nav-item .nav-link:hover {
+    color: #ff6ec7 !important; /* Pink Hover Color */
+}
+
+/* SABER MAIS Button Styling */
+.btn-saber-mais {
+    background-color: #ff6ec7; /* Pink Button Background */
+    color: #fff !important;
+    padding: 10px 20px;
+    border-radius: 50px; /* Fully Rounded */
+    border: none;
+    font-weight: 600;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+    transition: background-color 0.3s ease;
+}
+
+.btn-saber-mais:hover {
+    background-color: #ff85c0; /* Darker Pink on Hover */
+    text-decoration: none;
+}
+
+/* Footer Styling */
+.footer-custom {
+    background-color: rgba(18, 18, 18, 0.9); /* Semi-transparent dark footer */
+    color: #b2bec3;
+    text-align: center;
+    padding: 20px 0;
+    font-size: 0.9rem;
+    border-top: 1px solid #b2bec3;
+}
+
+.footer-custom a {
+    color: #ff6ec7; /* Pink Link Color */
+    text-decoration: none;
+}
+
+.footer-custom a:hover {
+    color: #ff85c0; /* Darker Pink on Hover */
+}
+
+/* Social Icons in Footer */
+.social-icons a {
+    color: #ff6ec7;
+    font-size: 1.2rem;
+    margin: 0 10px;
+    transition: color 0.3s ease;
+}
+
+.social-icons a:hover {
+    color: #ff85c0;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+    .navbar-custom .navbar-brand {
+        font-size: 1.5rem;
+    }
+
+    .navbar-custom .nav-item .nav-link {
+        margin-left: 0.8rem;
+    }
+
+    .btn-saber-mais {
+        padding: 8px 16px;
+    }
+}
+
+/* Custom Animations */
+.navbar-custom, .footer-custom {
+    animation: fadeIn 1.2s ease-in-out;
+}
+
+@keyframes fadeIn {
+    0% { opacity: 0; }
+    100% { opacity: 1; }
+}
+
+/* Dark Theme Specific Styles */
+.hero-section {
+    /* Create a deep dark gradient background */
+    background: linear-gradient(135deg, #1c1c1e, #2c3e50); 
+    color: #ffffff;
+
+    /* Add subtle glowing particles using radial-gradient */
+    background: radial-gradient(circle at 20% 30%, rgba(255, 255, 255, 0.2) 1px, transparent 1px), 
+                radial-gradient(circle at 70% 80%, rgba(255, 255, 255, 0.15) 1px, transparent 1px),
+                radial-gradient(circle at 40% 60%, rgba(255, 255, 255, 0.1) 2px, transparent 2px), 
+                linear-gradient(135deg, #1c1c1e, #2c3e50);
+
+    background-size: 100% 100%, 100% 100%, 100% 100%, cover;
+}
+
+/* Optional: Add some soft glow effect around the text */
+.hero-section h1, .hero-section h4, .hero-section p {
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+}
+
+.form-control::placeholder {
+    color: #aaaaaa;
+}
+
+.card {
+    background-color: #1e1e1e;
+    border: 1px solid #555555;
+}
+
+.card-body {
+    color: #ffffff;
+}
+
+.testimonials-section {
+    background-color: #121212;
+    color: #e0e0e0;
+}
+
+.embed-responsive-item {
+    border: none;
+}

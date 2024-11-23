@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Botox</title>
+
+    <!-- Favicon -->
+    <link rel="icon" href="{{ url_for('static', filename='images/favicon.ico') }}" type="image/x-icon">
+    
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" 
+          integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" 
+          crossorigin="anonymous">
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Font Awesome for Icons (Optional) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" 
+          integrity="sha512-pVnU6f6G7U5+F7+P6uO4VdTjS2GZsFx9WdD4JxEo3cGfb9yD7LKXZpQh+Z6LXb7+3vJHCiDc6NnQZ1O6mU0Gg==" 
+          crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    
+    <style>
+        /* Global Styles */
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background-color: #121212; /* Dark background */
+            color: #ffffff; /* Light text */
+            margin: 0;
+            padding: 0;
+        }
+
+        /* Navbar Styling */
+        .navbar-custom {
+            background-color: #1f1f1f; /* Dark navbar */
+            padding: 1rem 2rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+        }
+
+        .navbar-custom .navbar-brand {
+            font-weight: 700;
+            font-size: 1.8rem;
+            color: #ff6ec7 !important; /* Pink color */
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .navbar-custom .navbar-brand:hover {
+            color: #ff85c0 !important;
+        }
+
+        .navbar-custom .nav-item .nav-link {
+            color: #ffffff !important;
+            margin-left: 1.2rem;
+            font-weight: 500;
+        }
+
+        .navbar-custom .nav-item .nav-link:hover {
+            color: #ff6ec7 !important;
+        }
+
+        /* "SABER MAIS" Button */
+        .btn-saber-mais {
+            background-color: #ff6ec7; /* Pink color */
+            color: #ffffff !important;
+            padding: 10px 20px;
+            border-radius: 50px; /* Rounded border */
+            border: none;
+            font-weight: 600;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+            transition: background-color 0.3s ease;
+        }
+
+        .btn-saber-mais:hover {
+            background-color: #ff85c0; /* Darker pink */
+        }
+
+        /* Footer Styling */
+        .footer-custom {
+            background-color: #1f1f1f; /* Dark footer */
+            color: #b2bec3;
+            text-align: center;
+            padding: 20px 0;
+            font-size: 0.9rem;
+            border-top: 1px solid #b2bec3;
+        }
+
+        .footer-custom a {
+            color: #ff6ec7; /* Pink color */
+            text-decoration: none;
+        }
+
+        .footer-custom a:hover {
+            color: #ff85c0; /* Darker pink */
+        }
+
+        /* Social Icons in Footer */
+        .social-icons a {
+            color: #ff6ec7;
+            font-size: 1.2rem;
+            margin: 0 10px;
+            transition: color 0.3s ease;
+        }
+
+        .social-icons a:hover {
+            color: #ff85c0;
+        }
+
+        /* Responsive Adjustments */
+        @media (max-width: 768px) {
+            .navbar .navbar-nav {
+                display: none;
+            }
+
+            /* Center "SABER MAIS" button on smaller screens */
+            .btn-saber-mais {
+                margin: auto;
+                display: block;
+            }
+        }
+
+        /* Custom Animations */
+        .navbar-custom, .footer-custom {
+            animation: fadeIn 1.2s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            0% { opacity: 0; }
+            100% { opacity: 1; }
+        }
+
+        /* Modal Overlay */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .modal-content {
+            background: #1f1f1f;
+            padding: 2rem;
+            border-radius: 8px;
+            color: #ffffff;
+            max-width: 500px;
+            width: 90%;
+            text-align: center;
+        }
+
+        .close-modal {
+            position: absolute;
+            top: 20px;
+            right: 30px;
+            color: #ffffff;
+            font-size: 30px;
+            cursor: pointer;
+        }
+
+        /* Dark Table Style for Leads */
+        .table-dark th, .table-dark td {
+            color: #ffffff;
+        }
+    </style>
+</head>
+<body>
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg navbar-custom fixed-top">
+    <a class="navbar-brand" href="{{ url_for('leadgen.botox') }}">BOTOX</a>
+    <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ml-auto">
+            <!-- "RESULTADOS" Link -->
+            <li class="nav-item">
+                <a class="nav-link" href="#contact-form">RESULTADOS</a>
+            </li>
+            
+            {% if current_user.is_authenticated %}
+                <!-- "ADMIN" Link -->
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('leadgen.botox') }}">Admin</a>
+                </li>
+                <!-- "HOME" Link -->
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('leadgen.botox') }}">Home</a>
+                </li>
+                <!-- "UPLOAD" Link -->
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('leadgen.upload') }}">Upload</a>
+                </li>
+                <!-- LEADS WHATSAPP LINK -->
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('core.view_leads_whatsapp') }}">Leads</a>
+                </li>
+                <!-- "LOGOUT" Link -->
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('users.logout') }}">Logout</a>
+                </li>
+            {% endif %}
+        </ul>
+    </div>
+    <!-- "SABER MAIS" Button -->
+    <a class="btn-saber-mais ml-auto" href="#contact-form" id="saber-mais-btn">SABER MAIS</a>
+</nav>
+
+    <!-- Flash Messages -->
+    <div class="container mt-5 pt-5">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Fechar">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+    </div>
+
+    <!-- Dynamic Content -->
+    {% block content %}{% endblock %}
+
+    <!-- Modal Overlay -->
+    <div class="modal-overlay" id="modal-overlay">
+        <div class="modal-content">
+            <span class="close-modal" id="close-modal">&times;</span>
+            <h2>Mais Informações</h2>
+            <p>Insira aqui mais informações ou um formulário adicional.</p>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer-custom">
+        <p>&copy; 2024 Pró-Corpo. Todos os direitos reservados.</p>
+        <p><a href="mailto:marketing@procorpo.com.br">marketing@procorpo.com.br</a></p>
+        <p class="social-icons">
+            <a href="https://facebook.com/seuPerfil" target="_blank"><i class="fab fa-facebook-f"></i

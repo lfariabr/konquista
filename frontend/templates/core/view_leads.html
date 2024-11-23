@@ -1,0 +1,123 @@
+{% extends "core/base_core.html" %}
+
+{% block content %}
+    <h1 class="text-center mb-5">Leads WhatsApp</h1>
+
+    <!-- Total Leads and Pages Information -->
+    <p class="text-center">Total leads: {{ pagination.total }} </p>
+<!-- Filter Form -->
+<form action="{{ url_for('core.view_leads_whatsapp') }}" method="GET" class="mb-4">
+    <div class="form-row">
+        <div class="col">
+            <input type="text" name="name" class="form-control" placeholder="Nome" value="{{ request.args.get('name', '') }}">
+        </div>
+        <div class="col">
+            <input type="text" name="phone" class="form-control" placeholder="Telefone" value="{{ request.args.get('phone', '') }}">
+        </div>
+        <div class="col">
+            <input type="date" name="creation_date" class="form-control" placeholder="Data de Criação" value="{{ request.args.get('creation_date', '') }}">
+        </div>
+        <div class="col">
+            <input type="text" name="tag" class="form-control" placeholder="Tag" value="{{ request.args.get('tag', '') }}">
+        </div>
+        <div class="col">
+            <input type="text" name="source" class="form-control" placeholder="Fonte" value="{{ request.args.get('source', '') }}">
+        </div>
+        <div class="col">
+            <input type="text" name="unit" class="form-control" placeholder="Unidade" value="{{ request.args.get('unit', '') }}">
+        </div>
+        <div class="col">
+            <input type="text" name="region" class="form-control" placeholder="Região" value="{{ request.args.get('region', '') }}">
+        </div>
+        <div class="col">
+            <input type="text" name="tags" class="form-control" placeholder="Tags" value="{{ request.args.get('tags', '') }}">
+        </div>
+        <div class="col-auto">
+            <button type="submit" class="btn btn-primary">Filtrar</button>
+        </div>
+    </div>
+</form>
+
+    <!-- Button for CSV upload -->
+    <div class="text-center mb-4">
+        <a href="{{ url_for('leadgen.upload') }}" class="btn btn-primary btn-lg">Subir Leads via CSV</a>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table table-hover table-bordered">
+            <thead class="thead-dark">
+                <th>ID</th>
+                <th>Nome</th>
+                <th>Telefone</th>
+                <th>Data de Criação</th>
+                <th>Tag</th>
+                <th>Fonte</th>
+                <th>Unidade</th>
+                <th>Região</th>
+                <th>Tags</th>
+                <th>Ações</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for lead in leads %}
+            <tr>
+                <td>{{ lead.id }}</td>
+                <td>{{ lead.name }}</td>
+                <td>{{ lead.phone }}</td>
+                <td>{{ lead.created_date.strftime('%Y-%m-%d %H:%M:%S') if lead.created_date else 'Data não disponível' }}</td>
+                <td>{{ lead.tag }}</td>
+                <td>{{ lead.source }}</td>
+                <td>{{ lead.store }}</td>
+                <td>{{ lead.region }}</td>
+                <td>{{ lead.tags }}</td>
+                <td>
+                    <!-- Use lead.model_type directly -->
+                    <a href="{{ url_for('core.edit_leads', model_type=lead.model_type, lead_id=lead.id) }}" class="btn btn-warning btn-sm">Editar</a>
+                    <form action="{{ url_for('core.delete_leads', model_type=lead.model_type, lead_id=lead.id) }}" method="POST" style="display:inline;">
+                        <button type="submit" class="btn btn-danger btn-sm">Excluir</button>
+                    </form>
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <!-- Pagination Controls -->
+    <nav aria-label="Page navigation">
+        <ul class="pagination justify-content-center">
+            <!-- Previous Button -->
+            {% if pagination.has_prev %}
+            <li class="page-item">
+                <a class="page-link" href="{{ url_for('core.view_leads_whatsapp', page=pagination.prev_num) }}">Previous</a>
+            </li>
+            {% else %}
+            <li class="page-item disabled">
+                <span class="page-link">Previous</span>
+            </li>
+            {% endif %}
+
+            <!-- Current Page Display -->
+            <li class="page-item active">
+                <span class="page-link">Page {{ pagination.page }} of {{ pagination.pages }}</span>
+            </li>
+
+            <!-- Next Button -->
+            {% if pagination.has_next %}
+            <li class="page-item">
+                <a class="page-link" href="{{ url_for('core.view_leads_whatsapp', page=pagination.next_num) }}">Next</a>
+            </li>
+            {% else %}
+            <li class="page-item disabled">
+                <span class="page-link">Next</span>
+            </li>
+            {% endif %}
+        </ul>
+
+        <!-- Specific Page Navigation -->
+        <form action="{{ url_for('core.view_leads_whatsapp') }}" method="GET" class="form-inline justify-content-center">
+            <label for="pageInput" class="mr-2">Go to page:</label>
+            <input type="number" name="page" id="pageInput" class="form-control" min="1" max="{{ pagination.pages }}" value="{{ pagination.page }}">
+            <button type="submit" class="btn btn-primary ml-2">Go</button>
+        </form>
+    </nav>
+{% endblock %}

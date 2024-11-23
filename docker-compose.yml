@@ -1,0 +1,15 @@
+services:
+  konquista:
+    build: .
+    container_name: konquista-app
+    ports:
+      - "5000:5000"
+    volumes:
+      - .:/app
+    restart: unless-stopped
+    networks:
+      - konquista-network
+
+networks:
+  konquista-network:
+    driver: bridge

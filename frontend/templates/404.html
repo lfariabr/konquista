@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="hero-section d-flex align-items-center" style="min-height: 100vh;">
+    <div class="container text-center">
+        <h1 class="display-4" style="color: #ff6ec7;">404 - Página Não Encontrada</h1>
+        <p class="lead">Ops! Parece que você se perdeu. A página que você está procurando não existe ou foi movida.</p>
+        <br>
+        <p>Mas não se preocupe, nós estamos aqui para ajudar você a voltar ao caminho certo!</p>
+        <a href="{{ url_for('leadgen.botox') }}" class="btn btn-saber-mais mt-3">Voltar para a Página Inicial</a>
+    </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    $(document).ready(function(){
+        // Adicionalmente, você pode adicionar scripts aqui, se necessário.
+    });
+</script>
+{% endblock %}

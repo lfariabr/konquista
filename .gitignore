@@ -1,0 +1,90 @@
+# Python cache files
+__pycache__/
+*.py[cod]
+
+# Virtual environments
+.env
+venv/
+.venv/
+
+# Flask specific
+instance/
+*.log
+migrations/
+
+# MacOS specific
+.DS_Store
+
+# Byte-compiled / optimized / DLL files
+*.py[cod]
+*$py.class
+
+# Distribution / packaging
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Installer logs
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Unit test / coverage reports
+htmlcov/
+.tox/
+.nox/
+.coverage
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+.hypothesis/
+pytest_cache/
+*.pkl
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# pyenv
+.python-version
+
+# celery beat schedule file
+celerybeat-schedule
+
+# SageMath parsed files
+*.sage.py
+
+# dotenv environment variables file
+.env
+*.env
+
+# Flask uploads folder
+uploads/
+migrations/
+tests/
+
+# Local dev databases
+*.sqlite3
+
+# VS Code settings
+.vscode/
+
+# Logs and other runtime files
+*.log
+*.pid
+*.out
+*.err
+
+# Notes
+notes.txt

@@ -1,0 +1,44 @@
+{% extends "core/base_core.html" %}
+
+{% block content %}
+<section class="core-section py-5">
+    <div class="container">
+        <h1 class="text-center mb-5">
+            {% if form.title.data %} Editar Mensagem {% else %} Cadastrar Nova Mensagem {% endif %}
+        </h1>
+
+        <div class="row">
+            <div class="col-md-6 offset-md-3">
+                <form method="POST" action="{% if form.title.data %}{{ url_for('core.edit_message', id=message.id) }}{% else %}{{ url_for('core.new_message') }}{% endif %}" enctype="multipart/form-data">
+                    {{ form.hidden_tag() }}
+                    
+                    <div class="form-group">
+                        {{ form.title.label(class="form-label") }}
+                        {{ form.title(class="form-control", placeholder="Digite um título") }}
+                    </div>
+
+                    <div class="form-group">
+                        {{ form.text.label(class="form-label") }}
+                        <!-- Ensure the textarea displays the message text with line breaks preserved -->
+                        <textarea class="form-control" name="text" rows="5" placeholder="Digite o texto">{{ form.text.data }}</textarea>
+                    </div>
+
+                    <div class="form-group">
+                        {{ form.interval.label(class="form-label") }}
+                        {{ form.interval(class="form-control", placeholder="Intervalo (dias)") }}
+                    </div>
+
+                    <div class="form-group">
+                        {{ form.file.label(class="form-label") }}
+                        {{ form.file(class="form-control", placeholder="Anexe um arquivo (opcional)") }}
+                    </div>
+
+                    <button type="submit" class="btn btn-success">
+                        {% if form.title.data %} Atualizar {% else %} Cadastrar {% endif %}
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

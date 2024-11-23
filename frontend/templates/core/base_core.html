@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Konquista - Relacionamento com Leads</title>
+
+    <!-- Favicon -->
+    <link rel="icon" href="{{ url_for('static', filename='images/favicon.ico') }}" type="image/x-icon">
+    
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" 
+          integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" 
+          crossorigin="anonymous">
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Font Awesome for Icons (Optional) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" 
+          integrity="sha512-pVnU6f6G7U5+F7+P6uO4VdTjS2GZsFx9WdD4JxEo3cGfb9yD7LKXZpQh+Z6LXb7+3vJHCiDc6NnQZ1O6mU0Gg==" 
+          crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    
+    <style>
+        /* Global Styles - Dark Theme */
+        body {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 12px; /* Reduced font size */
+            background-color: #121212; /* Dark background */
+            color: #e0e0e0; /* Light text */
+            margin: 0;
+            padding: 0;
+        }
+
+        pre {
+            color: white; /* Ensures the text color is white */
+            background: none; /* Remove any default background color */
+            font-family: inherit; /* Ensure it inherits the main font */
+        }
+        
+        /* Navbar Styling */
+        .navbar-custom {
+            background-color: #1e1e1e; /* Darker navbar */
+            padding: 1rem 2rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.5);
+        }
+
+        .navbar-custom .navbar-brand {
+            font-weight: 700;
+            font-size: 1.0rem;
+            color: #25d366 !important; /* WhatsApp green */
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .navbar-custom .navbar-brand:hover {
+            color: #128C7E !important; /* Darker green */
+        }
+
+        .navbar-custom .nav-item .nav-link {
+            color: #e0e0e0 !important; /* Light text */
+            margin-left: 1.2rem;
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+
+        .navbar-custom .nav-item .nav-link:hover {
+            color: #25d366 !important; /* WhatsApp green */
+        }
+
+        /* "SABER MAIS" Button */
+        .btn-saber-mais {
+            background-color: #25d366; /* WhatsApp green */
+            color: #ffffff !important;
+            padding: 10px 20px;
+            border-radius: 50px;
+            border: none;
+            font-weight: 600;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.5);
+            transition: background-color 0.3s ease;
+        }
+
+        .btn-saber-mais:hover {
+            background-color: #128C7E; /* Darker green */
+        }
+
+        /* Footer Styling */
+        .footer-custom {
+            background-color: #1e1e1e; /* Darker footer */
+            color: #b0b0b0;
+            text-align: center;
+            padding: 20px 0;
+            font-size: 0.9rem;
+            border-top: 1px solid #333;
+        }
+
+        .footer-custom a {
+            color: #25d366; /* WhatsApp green */
+            text-decoration: none;
+        }
+
+        .footer-custom a:hover {
+            color: #128C7E; /* Darker green */
+        }
+
+        /* Social Icons in Footer */
+        .social-icons a {
+            color: #25d366;
+            font-size: 1.2rem;
+            margin: 0 10px;
+            transition: color 0.3s ease;
+        }
+
+        .formatted-text {
+            font-family: inherit; /* Garante que a fonte herda o estilo correto */
+            white-space: pre-wrap; /* Mantém a quebra de linha */
+            color: white; /* Define a cor branca para o texto */
+        }
+        
+        .social-icons a:hover {
+            color: #128C7E;
+        }
+
+        /* Flash Message Styling */
+        .alert {
+            background-color: #333;
+            color: #e0e0e0;
+            border-color: #444;
+        }
+
+        .alert .close {
+            color: #e0e0e0;
+        }
+
+        /* Table Style for Leads */
+        .table-custom th, .table-custom td {
+            color: #e0e0e0;
+            background-color: #1e1e1e;
+        }
+
+        .table-custom th {
+            background-color: #25d366; /* WhatsApp green */
+            color: #ffffff;
+        }
+
+        /* Modal Overlay */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7); /* Darker overlay */
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .modal-content {
+            background: #2a2a2a;
+            padding: 2rem;
+            border-radius: 8px;
+            color: #e0e0e0;
+            max-width: 500px;
+            width: 90%;
+            text-align: center;
+        }
+
+        .close-modal {
+            position: absolute;
+            top: 20px;
+            right: 30px;
+            color: #e0e0e0;
+            font-size: 30px;
+            cursor: pointer;
+        }
+
+        /* Spinner for loading */
+        .spinner {
+            border: 4px solid rgba(255, 255, 255, 0.1);
+            border-left-color: #25d366;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            display: none; /* Hide by default */
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Responsive Adjustments */
+        @media (max-width: 768px) {
+            body {
+                font-size: 0.9rem;
+            }
+            .navbar .navbar-nav {
+                display: none;
+            }
+
+            /* Center "SABER MAIS" button on smaller screens */
+            .btn-saber-mais {
+                margin: auto;
+                display: block;
+            }
+        }
+
+        /* Custom Animations */
+        .navbar-custom, .footer-custom {
+            animation: fadeIn 1.2s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            0% { opacity: 0; }
+            100% { opacity: 1; }
+        }
+
+        /* Adjust spacing for container */
+        .container.mt-5.pt-5 {
+            margin-top: 6rem; /* Increased to push content below navbar */
+        }
+
+        /* Content Spacing */
+        h1, h2, h3, h4, h5, h6 {
+            margin-top: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        p {
+            margin-bottom: 1rem;
+            font-size: 0.9rem; /* Adjusted paragraph font size */
+        }
+
+        /* Footer Styling */
+        .footer-custom {
+            padding: 1rem 0; /* Adjusted padding */
+        }
+
+    </style>
+</head>
+<body>
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg navbar-custom fixed-top">
+    <a class="navbar-brand" href="{{ url_for('index') }}">Konquista</a>
+    <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ml-auto">
+            {% if current_user.is_authenticated %}
+            <li class="nav-item">
+                <a class="nav-link" href="{{ url_for('core.index') }}">Core</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{{ url_for('core.view_leads_whatsapp') }}">Contatos</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{{ url_for('core.phone_list') }}">Telefones</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{{ url_for('core.message_list') }}">Mensagens</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{{ url_for('users.logout') }}">Logout</a>
+            </li>
+            {% else %}
+            <li class="nav-item">
+                <a class="nav-link" href="{{ url_for('core.index') }}">Login</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{{ url_for('users.register') }}">Register</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#services">Serviços</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#about">Sobre Nós</a>
+            </li>
+            {% endif %}
+        </ul>
+    </div>
+    {% if not current_user.is_authenticated %}
+    <a class="btn-saber-mais ml-auto" href="#contact-form">SABER MAIS</a>
+    {% endif %}
+</nav>
+
+
+<!-- Flash Messages -->
+<div class="container mt-5 pt-5">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Fechar">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+</div>
+
+<!-- Dynamic Content -->
+{% block content %}{% endblock %}
+
+<!-- Modal Overlay -->
+<div class="modal-overlay" id="modal-overlay">
+    <div class="modal-content">
+        <span class="close-modal" id="close-modal">&times;</span>
+        <h2>Mais Informações</h2>
+        <p>Insira aqui mais informações ou um formulário adicional.</p>
+    </div>
+</div>
+
+<!-- Footer -->
+<footer class="footer-custom">
+    <p>&copy; 2024 Konquista. Todos os direitos reservados.</p>
+    <p><a href="mailto:contato@konquista.com.br">contato@konquista.com.br</a></p>
+    <p class="social-icons">
+        <a href="https://facebook.com/seuPerfil" target="_blank"><i class="fab fa-facebook-f"></i></a>
+        <a href="https://instagram.com/seuPerfil" target="_blank"><i class="fab fa-instagram"></i></a>

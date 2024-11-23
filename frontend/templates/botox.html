@@ -1,0 +1,142 @@
+{% extends "base.html" %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero-section d-flex align-items-center" style="min-height: 100vh;">
+    <div class="container text-center">
+        <h1>Pensou Botox?</h1>
+        <h4>É aqui na Pró-Corpo!</h4>
+        <br>
+        <p>Descubra sua melhor versão! 💫</p>
+        <a href="#contact-form" id="saber-mais-btn" class="btn btn-saber-mais mt-3">SABER MAIS</a>
+    </div>
+</section>
+
+<!-- Flash Messages Section -->
+{% with messages = get_flashed_messages() %}
+    {% if messages %}
+        <div class="alert alert-success" role="alert">
+            {% for message in messages %}
+                {{ message }}
+            {% endfor %}
+        </div>
+    {% endif %}
+{% endwith %}
+
+<!-- Contact Form Section -->
+<section id="contact-form" class="py-5">
+    <div class="container">
+        <div class="row">
+            <!-- Form Div -->
+            <div class="col-md-6">
+                <h2 class="mb-4">Entre em Contato</h2>
+                <form method="POST" action="{{ url_for('leadgen.botox') }}">
+                      {{ form.hidden_tag() }}  <!-- Inclui o campo CSRF -->
+                    <div class="form-group">
+                        {{ form.name.label(class="text-white") }}
+                        {{ form.name(class="form-control", placeholder="Digite seu nome") }}
+                    </div>
+                    <div class="form-group">
+                        {{ form.phone.label(class="text-white") }}
+                        {{ form.phone(class="form-control phone-mask", placeholder="Digite seu telefone") }}
+                    </div>
+                    <div class="form-group">
+                        {{ form.store.label(class="text-white") }}
+                        {{ form.store(class="form-control") }}
+                    </div>
+                    <button type="submit" class="btn btn-saber-mais">{{ form.submit.label.text }}</button>
+                </form>
+            </div>
+            <!-- Pictures Div -->
+            <div class="col-md-6">
+                <h2 class="mb-4 text-center" style="color: #ffffff;">Resultados</h2>
+                <div class="row">
+                    <div class="col-6 mb-3">
+                        <img src="{{ url_for('static', filename='images/botox-1.png') }}" class="img-fluid rounded" alt="Imagem da Galeria 1" loading="lazy">
+                    </div>
+                    <div class="col-6 mb-3">
+                        <img src="{{ url_for('static', filename='images/botox-2.png') }}" class="img-fluid rounded" alt="Imagem da Galeria 2" loading="lazy">
+                    </div>
+                    <div class="col-6 mb-3">
+                        <img src="{{ url_for('static', filename='images/botox-3.png') }}" class="img-fluid rounded" alt="Imagem da Galeria 3" loading="lazy">
+                    </div>
+                    <div class="col-6 mb-3">
+                        <img src="{{ url_for('static', filename='images/botox-4.png') }}" class="img-fluid rounded" alt="Imagem da Galeria 4" loading="lazy">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Testimonials Section -->
+<section id="resultados" class="testimonials-section py-5 bg-light">
+    <div class="container">
+        <h2 class="mb-4 text-center" style="color: #000000;">Depoimentos</h2>
+        <div class="row">
+            <!-- Testimonial 1 -->
+            <div class="col-md-4">
+                <div class="card shadow-sm">
+                    <div class="card-body">
+                        <p class="card-text">"A Pró-Corpo transformou minha vida! Os programas são de primeira."</p>
+                        <h5 class="card-title">- Maria S.</h5>
+                    </div>
+                </div>
+            </div>
+            <!-- Testimonial 2 -->
+            <div class="col-md-4">
+                <div class="card shadow-sm">
+                    <div class="card-body">
+                        <p class="card-text">"Suporte e recursos incríveis. Recomendo a todos."</p>
+                        <h5 class="card-title">- João P.</h5>
+                    </div>
+                </div>
+            </div>
+            <!-- Testimonial 3 -->
+            <div class="col-md-4">
+                <div class="card shadow-sm">
+                    <div class="card-body">
+                        <p class="card-text">"Alcancei meus objetivos de fitness mais rápido do que imaginei."</p>
+                        <h5 class="card-title">- Ana L.</h5>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Instagram Reels Section -->
+<section class="instagram-section py-5 bg-light">
+    <div class="container">
+        <h2 class="mb-4 text-center" style="color: #000;">Instagram Reels</h2>
+        <div class="row justify-content-center">
+            <!-- Example Instagram Reel Embed -->
+            <div class="col-md-8 mb-4">
+                <div class="embed-responsive embed-responsive-16by9" style="height: 700px;">
+                    <iframe class="embed-responsive-item" src="https://www.instagram.com/reel/C_lr7Z3hygb/embed" allowfullscreen></iframe>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Botox Information Section for SEO -->
+<section id="about-botox" class="py-5">
+    <div class="container">
+        <h2 class="mb-4 text-center">Tudo sobre Botox</h2>
+        <p>O Botox, ou toxina botulínica, é um tratamento estético amplamente reconhecido por seus efeitos rejuvenescedores. Ele atua relaxando os músculos faciais, suavizando rugas e linhas de expressão, proporcionando uma aparência mais jovem e descansada. É um procedimento minimamente invasivo, rápido e com resultados visíveis em poucos dias. O Botox é eficaz no tratamento de rugas na testa, linhas entre as sobrancelhas (glabela) e os pés de galinha ao redor dos olhos. Além de seus benefícios estéticos, o Botox também é utilizado em diversas áreas da medicina para tratar condições como hiperidrose (sudorese excessiva) e enxaqueca crônica.</p>
+        <p>Na Pró-Corpo, oferecemos o tratamento com Botox realizado por profissionais qualificados e experientes, garantindo segurança e resultados naturais. Nosso compromisso é proporcionar a você um atendimento personalizado, com produtos de qualidade e técnicas avançadas. Agende sua avaliação e descubra como o Botox pode ajudar você a alcançar a sua melhor versão!</p>
+        <p>É importante lembrar que o Botox é um procedimento temporário, com efeitos que duram em média de 3 a 6 meses, dependendo do metabolismo de cada pessoa. Para manter os resultados, recomenda-se realizar sessões periódicas de acordo com a orientação do profissional. Além disso, uma consulta de avaliação é essencial para determinar as áreas a serem tratadas e a quantidade ideal de toxina botulínica a ser aplicada.</p>
+        <p>Se você busca um tratamento eficaz para suavizar rugas e linhas de expressão, o Botox pode ser a solução ideal. Na Pró-Corpo, você encontra um ambiente acolhedor, profissionais especializados e a certeza de um resultado satisfatório. Não perca tempo, agende agora mesmo sua avaliação e descubra como podemos ajudar você a conquistar a aparência desejada!</p>
+    </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    $(document).ready(function(){
+        // Aplicar máscara no campo de telefone
+        $('.phone-mask').mask('(00) 00000-0000');
+    });
+</script>
+{% endblock %}
