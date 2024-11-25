@@ -1,22 +1,27 @@
 {% extends "core/base_core.html" %}
 
 {% block content %}
-<section class="core-section py-5">
-    <div class="container">
-        <h1 class="text-center mb-5">Mensagens</h1>
-
-        <!-- Add New Message Button -->
-        <div class="text-right mb-4">
-            <a href="{{ url_for('core.new_message') }}" class="btn btn-primary">Cadastrar Nova Mensagem</a>
-            <a href="{{ url_for('core.run_datawrestler_page') }}" class="btn btn-success">Disparar Mensagens</a>
-            <a href="{{ url_for('core.message_logs') }}" class="btn btn-info">Consultar Histórico de Mensagens</a>
+<div class="container mt-4">
+    <h2>Mensagens</h2>
+    
+    <!-- Action Buttons -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <div class="d-flex gap-2">
+                <a href="{{ url_for('core.new_message') }}" class="btn btn-primary">Cadastrar Nova Mensagem</a>
+                <a href="{{ url_for('core.run_datawrestler_page') }}" class="btn btn-success">Disparar Mensagens</a>
+                <a href="{{ url_for('core.message_logs') }}" class="btn btn-info">Consultar Histórico de Mensagens</a>
+            </div>
         </div>
+    </div>
 
-        <!-- Table for Listing Messages -->
-        <div class="table-responsive">
-            <table class="table table-hover table-bordered">
-                <thead class="thead-dark">
-                    <tr>
+    <!-- Results Table -->
+    <div class="card">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
                             <th>Título</th>
                             <th>Texto</th>
                             <th>Intervalo</th>
@@ -28,7 +33,6 @@
                         {% for message in messages %}
                         <tr>
                             <td>{{ message.title }}</td>
-                            <!-- Use the nl2br filter to display newlines as <br> tags in the message text -->
                             <td><pre class="formatted-text">{{ message.text | nl2br }}</pre></td>
                             <td>{{ message.interval }}</td>
                             <td>
@@ -46,10 +50,14 @@
                             </td>
                         </tr>
                         {% endfor %}
+                        <tr class="table-info">
+                            <td colspan="4"><strong style="color: #25d366">Total</strong></td>
+                            <td><strong style="color: #25d366">{{ messages|length }}</strong></td>
+                        </tr>
                     </tbody>
                 </table>
             </div>
         </div>
     </div>
-</section>
+</div>
 {% endblock %}

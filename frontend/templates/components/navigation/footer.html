@@ -8,10 +8,9 @@
             <div class="col-lg-4 mb-4 mb-lg-0">
                 <h5>Links Rápidos</h5>
                 <ul class="list-unstyled">
-                    <li><a href="#services">Serviços</a></li>
-                    <li><a href="#about">Sobre Nós</a></li>
-                    <li><a href="#contact">Contato</a></li>
-                    <li><a href="#privacy">Privacidade</a></li>
+                    <li><a href="https://luisfaria.dev/" target="_blank">Contato</a></li>
+                    <li><a href="{{ url_for('core.privacy_policy') }}">Política de Privacidade</a></li>
+                    <li><a href="{{ url_for('core.terms_of_use') }}">Termos de Uso</a></li>
                 </ul>
             </div>
             <div class="col-lg-4">
@@ -21,13 +20,7 @@
                     <a href="mailto:contato@konquista.com.br">contato@konquista.com.br</a>
                 </p>
                 <div class="social-icons">
-                    <a href="https://facebook.com/konquista" target="_blank" class="me-2">
-                        <i class="fab fa-facebook-f"></i>
-                    </a>
-                    <a href="https://instagram.com/konquista" target="_blank" class="me-2">
-                        <i class="fab fa-instagram"></i>
-                    </a>
-                    <a href="https://linkedin.com/company/konquista" target="_blank">
+                    <a href="https://www.linkedin.com/in/lfariabr/" target="_blank">
                         <i class="fab fa-linkedin-in"></i>
                     </a>
                 </div>
@@ -40,8 +33,8 @@
             </div>
             <div class="col-md-6 text-center text-md-end">
                 <p class="mb-0">
-                    <a href="#privacy">Política de Privacidade</a> | 
-                    <a href="#terms">Termos de Uso</a>
+                    <a href="{{ url_for('core.privacy_policy') }}">Política de Privacidade</a> | 
+                    <a href="{{ url_for('core.terms_of_use') }}">Termos de Uso</a>
                 </p>
             </div>
         </div>

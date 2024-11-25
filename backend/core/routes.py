@@ -4,7 +4,8 @@ from flask import Blueprint, render_template, flash, redirect, url_for, current_
 from flask_login import login_required, current_user
 from sqlalchemy import desc, text, literal
 from flask_socketio import SocketIO, emit
-from datetime import datetime
+from datetime import datetime, timedelta
+from werkzeug.utils import secure_filename
 
 from backend.config import db, app
 from backend.users.models import MessageList, UserPhone
@@ -13,8 +14,6 @@ from backend.datawrestler.resolvers import run_data_wrestling
 from backend.leadgen.models import LeadWhatsapp, LeadLandingPage
 from backend.leadgen.forms import LeadWhatsappForm, LeadForm
 from backend.apisocialhub.models import MessageLog
-from werkzeug.utils import secure_filename
-from flask import make_response
 
 core_blueprint = Blueprint('core', __name__)
 
@@ -129,17 +128,27 @@ def message_logs():
         'status' : request.args.get('status', type=str),
     }
 
-    ## Building the query based on filters - old
-    # query = MessageLog.query
-
     # Building query based on filters + user_id
     query = MessageLog.query.filter_by(user_id=current_user.id)
 
     for attr, value in filters.items():
         if value:
-            column = getattr(MessageLog, attr, None)
-            if column:
-                query = query.filter(column == value)
+            if attr == 'date_sent':
+                # Convert the date string to datetime and filter for the entire day
+                try:
+                    date_obj = datetime.strptime(value, '%Y-%m-%d')
+                    next_day = date_obj + timedelta(days=1)
+                    query = query.filter(
+                        MessageLog.date_sent >= date_obj,
+                        MessageLog.date_sent < next_day
+                    )
+                except ValueError:
+                    # If date parsing fails, skip this filter
+                    pass
+            else:
+                column = getattr(MessageLog, attr, None)
+                if column:
+                    query = query.filter(column == value)
     # Pagination
 
     try:
@@ -294,106 +303,6 @@ def stop_datawrestler_route():
 ####################
 
 # Route for viewing leads with pagination
-# @core_blueprint.route('/leads_whatsapp', methods=['GET'])
-# @login_required
-# def view_leads_whatsapp():
-#     # Pagination parameters
-#     page = request.args.get('page', 1, type=int)
-#     per_page = 10
-#     # Collect filters from request arguments
-#     filters = {
-#         'name': request.args.get('name', type=str),
-#         'phone': request.args.get('phone', type=str),
-#         'creation_date': request.args.get('creation_date', type=str),
-#         'tag': request.args.get('tag', type=str),
-#         'source': request.args.get('source', type=str),
-#         'unit': request.args.get('unit', type=str),
-#         'region': request.args.get('region', type=str),
-#         'tags': request.args.get('tags', type=str),
-#     }
-    
-#     # Building the query based on filters
-#     whatsapp = LeadWhatsapp.query
-#     landingpage = LeadLandingPage.query
-
-#     # Apply filters
-#     for attr, value in filters.items():
-#         if value:
-#             column = getattr(LeadWhatsapp, attr, None)
-#             if column:
-#                 whatsapp = whatsapp.filter(column == value)
-#             column = getattr(LeadLandingPage, attr, None)
-#             if column:
-#                 landingpage = landingpage.filter(column == value)
-
-#     query = whatsapp.union(landingpage)
-                
-#     # Pagination                
-#     try:
-#         pagination = query.order_by(desc(LeadWhatsapp.id)).paginate(
-#             page=page, per_page=per_page, error_out=False
-#         )
-                        
-#         leads = pagination.items
-
-#     except TypeError as e:
-#         return "Ops... could not load leads!", 500
-
-#     return render_template(
-#                         'core/view_leads.html', 
-#                         leads=leads, 
-#                         pagination=pagination
-#                         )
-# ### Editing Leads
-# @core_blueprint.route('/edit_leads/<int:lead_id>', methods=['GET', 'POST'])
-# @login_required
-# def edit_leads(lead_id):
-#     lead = LeadWhatsapp.query.get_or_404(lead_id)
-#     form = LeadWhatsappForm(obj=lead)
-    
-#     if form.validate_on_submit():
-#         # Atualize os campos diretamente
-#         lead.name = form.name.data
-#         lead.phone = form.phone.data
-#         lead.tag = form.tag.data
-#         lead.source = form.source.data
-#         lead.store = form.store.data
-#         lead.region = form.region.data
-#         lead.tags = form.tags.data
-
-#         # Capturar a data do campo de data e definir hora como NOW
-#         if form.created_date.data:
-#             try:
-#                 # Apenas a data fornecida, adicionando a hora atual
-#                 selected_date = datetime.strptime(form.created_date.data, '%Y-%m-%d')
-#                 lead.created_date = datetime.combine(selected_date, datetime.now().time())
-#             except ValueError:
-#                 flash('Data inválida. Use o formato do seletor de data.')
-#                 return render_template('core/edit_leads.html', form=form, lead=lead)
-#         else:
-#             lead.created_date = datetime.now()  # Caso o usuário não insira nada
-
-#         try:
-#             db.session.commit()
-#             flash('Lead editado com sucesso!')
-#         except Exception as e:
-#             db.session.rollback()
-#             flash(f'Erro ao editar o lead: {str(e)}')
-#         return redirect(url_for('core.view_leads_whatsapp'))
-    
-#     return render_template('core/edit_leads.html', form=form, lead=lead)
-
-# #### Excluding Whatsapp Leads
-# @core_blueprint.route('/delete_leads/<int:lead_id>', methods=['POST'])
-# @login_required
-# def delete_leads(lead_id):
-#     lead = LeadWhatsapp.query.get_or_404(lead_id)
-#     db.session.delete(lead)
-#     db.session.commit()
-#     flash('Lead excluído com sucesso!')
-#     return redirect(url_for('core.view_leads_whatsapp'))
-
-from sqlalchemy import literal
 @core_blueprint.route('/leads_whatsapp', methods=['GET'])
 @login_required
 def view_leads_whatsapp():
@@ -401,70 +310,57 @@ def view_leads_whatsapp():
     page = request.args.get('page', 1, type=int)
     per_page = 10
     # Collect filters from request arguments
-    filters = {
-        'name': request.args.get('name', type=str),
-        'phone': request.args.get('phone', type=str),
-        'creation_date': request.args.get('creation_date', type=str),
-        'tag': request.args.get('tag', type=str),
-        'source': request.args.get('source', type=str),
-        'unit': request.args.get('unit', type=str),
-        'region': request.args.get('region', type=str),
-        'tags': request.args.get('tags', type=str),
-    }
+    name = request.args.get('name', '')
+    phone = request.args.get('phone', '')
+    tag = request.args.get('tag', '')
+    source = request.args.get('source', '')
+    store = request.args.get('store', '')
+    created_date = request.args.get('created_date', '')
+    region = request.args.get('region', '')
 
-    # Building the queries based on filters
-    whatsapp = LeadWhatsapp.query
-    landingpage = LeadLandingPage.query
-
-    # Building the queries based on filters + current user id
-    whatsapp = whatsapp.filter(LeadWhatsapp.user_id == current_user.id)
-    landingpage = landingpage.filter(LeadLandingPage.user_id == current_user.id)
+    # Base query with user filter
+    query = LeadWhatsapp.query.filter_by(user_id=current_user.id)
 
     # Apply filters
-    for attr, value in filters.items():
-        if value:
-            column_w = getattr(LeadWhatsapp, attr, None)
-            if column_w:
-                whatsapp = whatsapp.filter(column_w == value)
-            column_l = getattr(LeadLandingPage, attr, None)
-            if column_l:
-                landingpage = landingpage.filter(column_l == value)
+    if name:
+        query = query.filter(LeadWhatsapp.name.ilike(f'%{name}%'))
+    if phone:
+        query = query.filter(LeadWhatsapp.phone.ilike(f'%{phone}%'))
+    if tag:
+        query = query.filter(LeadWhatsapp.tag.ilike(f'%{tag}%'))
+    if source:
+        query = query.filter(LeadWhatsapp.source.ilike(f'%{source}%'))
+    if store:
+        query = query.filter(LeadWhatsapp.store.ilike(f'%{store}%'))
+    if region:
+        query = query.filter(LeadWhatsapp.region.ilike(f'%{region}%'))
+    if created_date:
+        try:
+            date_obj = datetime.strptime(created_date, '%Y-%m-%d')
+            next_day = date_obj + timedelta(days=1)
+            query = query.filter(
+                LeadWhatsapp.created_date >= date_obj,
+                LeadWhatsapp.created_date < next_day
+            )
+        except ValueError:
+            # If date parsing fails, skip this filter
+            pass
+    # Pagination                
+    try:
+        pagination = query.order_by(desc(LeadWhatsapp.id)).paginate(
+            page=page, per_page=per_page, error_out=False
+        )
+                        
+        leads = pagination.items
 
-    # Adjust queries to include 'model_type'
-    whatsapp_query = whatsapp.with_entities(
-        LeadWhatsapp.id.label('id'),
-        LeadWhatsapp.name.label('name'),
-        LeadWhatsapp.phone.label('phone'),
-        LeadWhatsapp.created_date.label('created_date'),
-        LeadWhatsapp.tag.label('tag'),
-        LeadWhatsapp.source.label('source'),
-        LeadWhatsapp.store.label('store'),
-        LeadWhatsapp.region.label('region'),
-        LeadWhatsapp.tags.label('tags'),
-        literal('whatsapp').label('model_type')
-    )
+    except TypeError as e:
+        return "Ops... could not load leads!", 500
 
-    landingpage_query = landingpage.with_entities(
-        LeadLandingPage.id.label('id'),
-        LeadLandingPage.name.label('name'),
-        LeadLandingPage.phone.label('phone'),
-        LeadLandingPage.created_date.label('created_date'),
-        LeadLandingPage.tag.label('tag'),
-        LeadLandingPage.source.label('source'),
-        LeadLandingPage.store.label('store'),
-        LeadLandingPage.region.label('region'),
-        LeadLandingPage.tags.label('tags'),
-        literal('landingpage').label('model_type')
-    )
-
-    # Union the queries
-    query = whatsapp_query.union_all(landingpage_query)
-
-    # Pagination
-    pagination = query.order_by(desc('id')).paginate(page=page, per_page=per_page, error_out=False)
-    leads = pagination.items
-
-    return render_template('core/view_leads.html', leads=leads, pagination=pagination)
+    return render_template(
+                        'core/view_leads.html', 
+                        leads=leads, 
+                        pagination=pagination
+                        )
 
 @core_blueprint.route('/edit_leads/<model_type>/<int:lead_id>', methods=['GET', 'POST'])
 @login_required
@@ -509,3 +405,69 @@ def delete_leads(model_type, lead_id):
         db.session.rollback()
         flash(f'Erro ao excluir o lead: {str(e)}')
     return redirect(url_for('core.view_leads_whatsapp'))
+
+####################
+# CONTACTS MEDIA VISIBILITY
+####################
+
+@core_blueprint.route('/contacts-media-visibility')
+@login_required
+def contacts_media_visibility():
+    # Get filter parameters from request
+    tag = request.args.get('tag', '')
+    source = request.args.get('source', '')
+    store = request.args.get('store', '')
+    region = request.args.get('region', '')
+    month = request.args.get('month', '11')  # Default to November if no month selected
+
+    # Base query
+    query = db.session.query(
+        LeadWhatsapp.region,
+        db.func.count(LeadWhatsapp.id).label('count')
+    ).group_by(LeadWhatsapp.region)
+
+    # Apply filters
+    if tag:
+        query = query.filter(LeadWhatsapp.tag == tag)
+    if source:
+        query = query.filter(LeadWhatsapp.source == source)
+    if store:
+        query = query.filter(LeadWhatsapp.store == store)
+    if region:
+        query = query.filter(LeadWhatsapp.region == region)
+    if month:
+        query = query.filter(db.func.extract('month', LeadWhatsapp.created_date) == month)
+
+    # Execute query
+    region_stats = query.all()
+    
+    # Calculate total contacts
+    total_contacts = sum(stat.count for stat in region_stats)
+
+    # Get unique values for filters
+    tags = db.session.query(LeadWhatsapp.tag).distinct().order_by(LeadWhatsapp.tag).all()
+    sources = db.session.query(LeadWhatsapp.source).distinct().order_by(LeadWhatsapp.source).all()
+    stores = db.session.query(LeadWhatsapp.store).distinct().order_by(LeadWhatsapp.store).all()
+    regions = db.session.query(LeadWhatsapp.region).distinct().order_by(LeadWhatsapp.region).all()
+    
+    # Get unique months from created_date, ordered ascending
+    months = db.session.query(
+        db.func.extract('month', LeadWhatsapp.created_date).label('month')
+    ).distinct().order_by('month').all()
+
+    return render_template('core/contacts_media_visibility.html',
+                         region_stats=region_stats,
+                         tags=[tag[0] for tag in tags if tag[0]],
+                         sources=[source[0] for source in sources if source[0]],
+                         stores=[store[0] for store in stores if store[0]],
+                         regions=[region[0] for region in regions if region[0]],
+                         months=[int(month[0]) for month in months if month[0]],
+                         total_contacts=total_contacts)
+
+@core_blueprint.route('/privacy-policy')
+def privacy_policy():
+    return render_template('core/privacy_policy.html')
+
+@core_blueprint.route('/terms-of-use')
+def terms_of_use():
+    return render_template('core/terms_of_use.html')

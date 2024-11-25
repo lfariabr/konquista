@@ -235,6 +235,17 @@ def run_data_wrestling(user_id):
             return
         
         keep_alive() 
+        # Total time to sleep
+        total_time = 1 * 60 * 180  #+ (15 * 60) # 1 hour + 15m
+        interval = 60
+        display_interval = 1  # countdown
+        # Loop that sleeps until time to go
+        for remaining_time in range(int(total_time), 0, -interval):
+            time.sleep(interval)
+            if remaining_time % (display_interval * 60) == 0:
+                remaining_minutes = remaining_time // 60
+                print(f"Time left: {remaining_minutes} minutes")
+        print("Finished waiting.. ready for next")
         print("resting 30s at message and phones dictionaries")
         yield "log at messages and phones dic. Waiting 30s\n"
         time.sleep(30)

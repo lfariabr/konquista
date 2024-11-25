@@ -1,0 +1,92 @@
+{% extends "core/base_core.html" %}
+{% block content %}
+
+<div class="container mt-4">
+    <h2>Contacts Media Visibility</h2>
+    
+    <!-- Filters -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <form method="GET" action="{{ url_for('core.contacts_media_visibility') }}" class="row g-3">
+                <div class="col-md-2">
+                    <label for="tag" class="form-label">Tag</label>
+                    <select name="tag" id="tag" class="form-select">
+                        <option value="">All</option>
+                        {% for tag in tags %}
+                            <option value="{{ tag }}" {% if request.args.get('tag') == tag %}selected{% endif %}>{{ tag }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <label for="source" class="form-label">Source</label>
+                    <select name="source" id="source" class="form-select">
+                        <option value="">All</option>
+                        {% for source in sources %}
+                            <option value="{{ source }}" {% if request.args.get('source') == source %}selected{% endif %}>{{ source }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <label for="store" class="form-label">Store</label>
+                    <select name="store" id="store" class="form-select">
+                        <option value="">All</option>
+                        {% for store in stores %}
+                            <option value="{{ store }}" {% if request.args.get('store') == store %}selected{% endif %}>{{ store }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <label for="region" class="form-label">Region</label>
+                    <select name="region" id="region" class="form-select">
+                        <option value="">All</option>
+                        {% for region in regions %}
+                            <option value="{{ region }}" {% if request.args.get('region') == region %}selected{% endif %}>{{ region }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <label for="month" class="form-label">Month</label>
+                    <select name="month" id="month" class="form-select">
+                        <option value="">All</option>
+                        {% for month in months %}
+                            <option value="{{ month }}" {% if request.args.get('month') == month %}selected{% endif %}>{{ month }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-2 d-flex align-items-end">
+                    <button type="submit" class="btn btn-primary w-100">Filter</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Results Table -->
+    <div class="card">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Region</th>
+                            <th>Contact Count</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for region_data in region_stats %}
+                        <tr>
+                            <td>{{ region_data.region }}</td>
+                            <td>{{ region_data.count }}</td>
+                        </tr>
+                        {% endfor %}
+                        <tr class="table-info">
+                            <td><strong style="color: #25d366">Total</strong></td>
+                            <td><strong style="color: #25d366">{{ total_contacts }}</strong></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
