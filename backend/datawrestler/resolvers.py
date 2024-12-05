@@ -12,11 +12,13 @@ from backend.apisocialhub.models import MessageLog, MessageList
 from backend.apisocialhub.resolvers import send_message, send_message_with_file, cherry_pick_message
 from backend.apicrmgraphql.resolvers.appointments_resolver import fetch_appointments, filter_and_clean_appointments
 from backend.apicrmgraphql.resolvers.leads_resolver import fetch_all_leads, filter_and_clean_leads, create_lead
-from .models import LeadsHandler
+# from .models import LeadsHandler
+from backend.datawrestler.models import LeadsHandler
 from sqlalchemy import desc
 from sqlalchemy.sql import text
 import threading
 load_dotenv()
+wait_time = 0
 
 # Import stop flag from app
 stop_flag = threading.Event()
@@ -233,10 +235,10 @@ def run_data_wrestling(user_id):
             print("Stopping data wrestling process.")
             yield "Stopping data wrestling process.\n"
             return
+            
         
         keep_alive() 
-        # Total time to sleep
-        total_time = 1 * 60 * 180  #+ (15 * 60) # 1 hour + 15m
+        total_time = 1 * 60 * wait_time  #+ (15 * 60) # 1 hour + 15m
         interval = 60
         display_interval = 1  # countdown
         # Loop that sleeps until time to go
@@ -418,6 +420,149 @@ def run_data_wrestling(user_id):
         yield "Finished loop!"
     except Exception as e:
         app.logger.error(f"Error while running datawrestler: {e}")
+
+def send_message_to_all_leads_from_json(leads_json, user_id):
+    """
+    Simply send messages to all leads from the JSON, using the message sending part of run_data_wrestling
+    """
+    try:
+        # Parse leads if it's a string
+        if isinstance(leads_json, str):
+            leads_list = json.loads(leads_json)
+        else:
+            leads_list = leads_json
+            
+        # Get messages and phones configurations
+        messages_dic = get_message()
+        phones_dic = get_phone_token()
+        
+        # Process each lead
+        for lead in leads_list:
+            phone = lead.get('phone')
+            tag = lead.get('tag')
+            
+            # Skip if no phone
+            if not phone:
+                print(f"No phone found for lead, skipping...")
+                continue
+                
+            # Set campaign and phone based on tag
+            if tag == "Botox":
+                campaign = "Botox"
+                phone_description = "Botox"
+            elif tag == "Preenchimento":
+                campaign = "Preenchimento"
+                phone_description = "Preenchimento"
+            else:
+                print(f"Tag {tag} not mapped, skipping...")
+                continue
+                
+            # Get the sender phone data
+            sender_phone_data = next(
+                (data for data in phones_dic.values() if data.get('phone_description') == phone_description),
+                None
+            )
+            if not sender_phone_data:
+                print(f"Error finding phone_description: {phone_description}")
+                continue
+                
+            # Get the token
+            api_token = sender_phone_data.get("phone_token")
+            if not api_token:
+                print(f"Error getting phone_token for sender: {sender_phone_data}")
+                continue
+                
+            # Get message data (using d1 message)
+            message_key = f"{campaign.lower()}d1"
+            message_data = messages_dic.get(message_key, {})
+            mensagem = message_data.get("text")
+            file = message_data.get("file")
+            
+            if not mensagem:
+                print(f"Message not found for key: {message_key}")
+                continue
+                
+            print(f"Sending message to: {phone}")
+            
+            # Send the message
+            try:
+                if file:
+                    response = cherry_pick_message(phone, mensagem, api_token, file)
+                    print(f"Message with file sent to {phone}")
+                    time.sleep(10)
+                else:
+                    response = cherry_pick_message(phone, mensagem, api_token)
+                    print(f"Message sent to {phone}")
+                    time.sleep(5)
+            except Exception as e:
+                print(f"Error sending message to {phone}: {str(e)}")
+                continue
+                
+            # Log the message
+            try:
+                lead_obj = db.session.query(LeadWhatsapp).filter_by(phone=phone).first()
+                if lead_obj:
+                    log = MessageLog(
+                        sender_phone_id=sender_phone_data.get('id'),
+                        sender_phone_number=sender_phone_data.get('phone_number'),
+                        source="Whatsapp",
+                        lead_phone_id=lead_obj.id,
+                        lead_phone_number=phone,
+                        status="sent" if response.get("success") else "failed",
+                        message_title=message_key,
+                        message_text=mensagem,
+                        date_sent=datetime.now(),
+                        user_id=user_id
+                    )
+                    db.session.add(log)
+                    db.session.commit()
+            except Exception as e:
+                print(f"Error logging message: {str(e)}")
+                db.session.rollback()
+                
+            # Create lead if contador is 3
+            contador = lead.get('sent_message_count', 0)
+            if contador == 3:
+                email = "campanha@whatsapp.com"
+                message = f"Lead da campanha {campaign}"
+                
+                try:
+                    # Create lead in CRM
+                    response = create_lead(lead.get('name'), phone, email, message, lead.get('store'), lead.get('region'))
+                    if 'data' in response and 'createLead' in response['data']:
+                        print(f"Lead {phone} criado com sucesso!")
+                    else:
+                        print(f"Error creating lead: {response}")
+                    
+                    # Log lead creation
+                    try:
+                        lead_obj = db.session.query(LeadWhatsapp).filter_by(phone=phone).first()
+                        if lead_obj is None:
+                            print(f"Failed to find lead with phone {phone}")
+                            continue  # Skip logging if no lead found
+                        log = MessageLog(
+                            sender_phone_id=None,  # No sender phone since it's lead creation
+                            sender_phone_number="N/A",  # Assuming this is allowed in your schema
+                            source="CRM",
+                            lead_phone_id=lead_obj.id if lead_obj else None,
+                            lead_phone_number=phone,
+                            status="lead_created",
+                            message_title=f"Lead criado para {campaign}",
+                            message_text=message,
+                            date_sent=datetime.now(),
+                            user_id=user_id
+                        )
+                        db.session.add(log)
+                        db.session.commit()
+                    except Exception as e:
+                        db.session.rollback()
+                        print(f"Error logging lead creation: {str(e)}")
+                except Exception as e:
+                    print(f"Error processing lead: {str(e)}")
+
+    except Exception as e:
+        print(f"Error in send_message_to_all_leads_from_json: {str(e)}")
+        return
 
 def view_logs():
     logs = MessageLog.query.all()

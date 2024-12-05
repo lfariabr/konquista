@@ -60,7 +60,7 @@ def query_leads(current_page, start_date, end_date, token):
             },
             'pagination': {
                 'currentPage': current_page,
-                'perPage': 200,  # Reduce the number of items per page
+                'perPage': 100,  # Reduce the number of items per page
             },
         },
     }

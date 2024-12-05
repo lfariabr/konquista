@@ -73,6 +73,7 @@ celerybeat-schedule
 uploads/
 migrations/
 tests/
+xdummy/
 
 # Local dev databases
 *.sqlite3
