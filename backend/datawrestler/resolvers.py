@@ -12,13 +12,12 @@ from backend.apisocialhub.models import MessageLog, MessageList
 from backend.apisocialhub.resolvers import send_message, send_message_with_file, cherry_pick_message
 from backend.apicrmgraphql.resolvers.appointments_resolver import fetch_appointments, filter_and_clean_appointments
 from backend.apicrmgraphql.resolvers.leads_resolver import fetch_all_leads, filter_and_clean_leads, create_lead
-# from .models import LeadsHandler
 from backend.datawrestler.models import LeadsHandler
 from sqlalchemy import desc
 from sqlalchemy.sql import text
 import threading
 load_dotenv()
-wait_time = 0
+wait_time = 360
 
 # Import stop flag from app
 stop_flag = threading.Event()

@@ -16,5 +16,7 @@ EXPOSE 5000
 # Define environment variable
 ENV FLASK_APP=backend.main
 
+COPY frontend/static /app/static
+
 # Run the application
 CMD ["flask", "run", "--host=0.0.0.0"]
